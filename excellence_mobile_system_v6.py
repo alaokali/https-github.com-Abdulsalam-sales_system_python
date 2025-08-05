@@ -1263,16 +1263,50 @@ def complete_sale():
                 }
                 data['inventory_movements'] = inventory_movements
 
-        # تحديث رصيد العميل إذا كان الدفع آجل
+        # تحديث رصيد العميل (بعد خصم المردودات)
         if customer_id and payment_method == 'آجل':
             if customer_id in customers:
+                # إضافة الرصيد الصافي (بعد خصم المردودات)
                 customers[customer_id]['current_balance'] += total_amount
-                customers[customer_id]['total_purchases'] += total_amount
+                customers[customer_id]['total_purchases'] += subtotal  # المبلغ الإجمالي قبل الخصم والضريبة
                 customers[customer_id]['last_purchase_date'] = datetime.now().isoformat()
+                
+                # خصم المردودات من إجمالي المشتريات
+                if returns_amount > 0:
+                    customers[customer_id]['total_purchases'] -= returns_amount
+                    # تسجيل المردود في تاريخ الرصيد
+                    balance_history = data.get('balance_history', {})
+                    history_id = str(uuid.uuid4())
+                    balance_history[history_id] = {
+                        'id': history_id,
+                        'customer_id': customer_id,
+                        'type': 'return_credit',
+                        'amount': -returns_amount,  # مبلغ سالب للمردود
+                        'description': f'خصم مردودات من فاتورة {invoice_number}',
+                        'date': datetime.now().isoformat(),
+                        'user_id': session['user_id']
+                    }
+                    data['balance_history'] = balance_history
         elif customer_id:
             if customer_id in customers:
-                customers[customer_id]['total_purchases'] += total_amount
+                # للدفع النقدي - تحديث إجمالي المشتريات بالمبلغ الصافي
+                customers[customer_id]['total_purchases'] += subtotal - returns_amount
                 customers[customer_id]['last_purchase_date'] = datetime.now().isoformat()
+                
+                # تسجيل المردود في تاريخ الرصيد للدفع النقدي أيضاً
+                if returns_amount > 0:
+                    balance_history = data.get('balance_history', {})
+                    history_id = str(uuid.uuid4())
+                    balance_history[history_id] = {
+                        'id': history_id,
+                        'customer_id': customer_id,
+                        'type': 'return_cash',
+                        'amount': -returns_amount,  # مبلغ سالب للمردود
+                        'description': f'مردود نقدي من فاتورة {invoice_number}',
+                        'date': datetime.now().isoformat(),
+                        'user_id': session['user_id']
+                    }
+                    data['balance_history'] = balance_history
 
         # حفظ البيانات
         sales[sale_id] = sale_record
@@ -1301,6 +1335,178 @@ def complete_sale():
 
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)})
+
+@app.route('/api/pos/process-post-sale-return', methods=['POST'])
+@require_permission('pos')
+def process_post_sale_return():
+    """معالجة مردود بعد إتمام البيع"""
+    try:
+        data = load_database()
+        products = data.get('products', {})
+        customers = data.get('customers', {})
+        sales = data.get('sales', {})
+        returns_data = data.get('returns', {})
+        
+        return_request = request.json
+        sale_id = return_request.get('sale_id')
+        invoice_number = return_request.get('invoice_number')
+        return_items = return_request.get('items', [])
+        return_reason = return_request.get('reason', 'مردود بعد البيع')
+        
+        # البحث عن الفاتورة
+        sale_record = None
+        if sale_id and sale_id in sales:
+            sale_record = sales[sale_id]
+        elif invoice_number:
+            for sid, sale in sales.items():
+                if sale.get('invoice_number') == invoice_number:
+                    sale_record = sale
+                    sale_id = sid
+                    break
+        
+        if not sale_record:
+            return jsonify({'success': False, 'message': 'الفاتورة غير موجودة'})
+        
+        if sale_record.get('status') != 'completed':
+            return jsonify({'success': False, 'message': 'لا يمكن إرجاع منتجات من فاتورة غير مكتملة'})
+        
+        # معالجة كل منتج مردود
+        total_return_amount = 0
+        processed_returns = []
+        
+        for return_item in return_items:
+            product_id = return_item.get('product_id')
+            return_quantity = int(return_item.get('quantity', 0))
+            
+            if return_quantity <= 0:
+                continue
+            
+            # البحث عن المنتج في الفاتورة الأصلية
+            original_item = None
+            for item in sale_record.get('items', []):
+                if item.get('product_id') == product_id:
+                    original_item = item
+                    break
+            
+            if not original_item:
+                continue
+            
+            # التحقق من الكمية المتاحة للإرجاع
+            already_returned = original_item.get('returned_quantity', 0)
+            available_for_return = original_item.get('quantity', 0) - already_returned
+            
+            if return_quantity > available_for_return:
+                return jsonify({
+                    'success': False, 
+                    'message': f'الكمية المطلوب إرجاعها أكبر من المتاح للمنتج {original_item.get("name", "")}'
+                })
+            
+            # حساب قيمة المردود
+            return_value = return_quantity * original_item.get('price', 0)
+            total_return_amount += return_value
+            
+            # تحديث المخزون
+            if product_id in products:
+                products[product_id]['stock_quantity'] += return_quantity
+            
+            # تسجيل حركة المخزون
+            movement_id = str(uuid.uuid4())
+            inventory_movements = data.get('inventory_movements', {})
+            inventory_movements[movement_id] = {
+                'id': movement_id,
+                'product_id': product_id,
+                'product_name': products[product_id]['name'] if product_id in products else original_item.get('name'),
+                'type': 'in',
+                'quantity': return_quantity,
+                'reason': 'post_sale_return',
+                'reference_id': sale_id,
+                'reference_type': 'post_sale_return',
+                'date': datetime.now().isoformat(),
+                'user_id': session['user_id'],
+                'notes': f'مردود بعد البيع - فاتورة {sale_record.get("invoice_number")} - السبب: {return_reason}'
+            }
+            data['inventory_movements'] = inventory_movements
+            
+            # تحديث الفاتورة الأصلية
+            original_item['returned_quantity'] = already_returned + return_quantity
+            
+            # تسجيل المردود
+            return_id = str(uuid.uuid4())
+            return_record = {
+                'id': return_id,
+                'sale_id': sale_id,
+                'invoice_number': sale_record.get('invoice_number'),
+                'product_id': product_id,
+                'product_name': original_item.get('name'),
+                'quantity': return_quantity,
+                'unit_price': original_item.get('price', 0),
+                'total_amount': return_value,
+                'reason': return_reason,
+                'date': datetime.now().isoformat(),
+                'processed_by': session['user_id'],
+                'customer_id': sale_record.get('customer_id'),
+                'payment_method': sale_record.get('payment_method'),
+                'status': 'completed'
+            }
+            
+            returns_data[return_id] = return_record
+            processed_returns.append(return_record)
+        
+        # تحديث حساب العميل بشكل صحيح
+        customer_id = sale_record.get('customer_id')
+        if customer_id and customer_id in customers and total_return_amount > 0:
+            payment_method = sale_record.get('payment_method', 'نقدي')
+            
+            if payment_method == 'آجل':
+                # خصم من الرصيد المستحق للعميل
+                customers[customer_id]['current_balance'] -= total_return_amount
+            
+            # خصم من إجمالي المشتريات دائماً
+            customers[customer_id]['total_purchases'] -= total_return_amount
+            
+            # تسجيل في تاريخ الرصيد
+            balance_history = data.get('balance_history', {})
+            history_id = str(uuid.uuid4())
+            balance_history[history_id] = {
+                'id': history_id,
+                'customer_id': customer_id,
+                'type': 'post_sale_return',
+                'amount': -total_return_amount,
+                'description': f'مردود بعد البيع - فاتورة {sale_record.get("invoice_number")} - السبب: {return_reason}',
+                'date': datetime.now().isoformat(),
+                'user_id': session['user_id']
+            }
+            data['balance_history'] = balance_history
+        
+        # حفظ البيانات
+        data['sales'] = sales
+        data['products'] = products
+        data['customers'] = customers
+        data['returns'] = returns_data
+        
+        if save_database(data):
+            # تسجيل النشاط
+            log_activity(session['user_id'], 'post_sale_return', {
+                'sale_id': sale_id,
+                'invoice_number': sale_record.get('invoice_number'),
+                'total_return_amount': total_return_amount,
+                'items_count': len(processed_returns),
+                'customer_id': customer_id
+            })
+            
+            return jsonify({
+                'success': True,
+                'message': f'تم معالجة مردود بقيمة {total_return_amount:.2f} ريال بنجاح',
+                'total_return_amount': total_return_amount,
+                'processed_returns': processed_returns,
+                'customer_balance_updated': customer_id is not None
+            })
+        else:
+            return jsonify({'success': False, 'message': 'خطأ في حفظ البيانات'})
+            
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})
+
 # ===== إدارة المنتجات =====
 
 @app.route('/products')
