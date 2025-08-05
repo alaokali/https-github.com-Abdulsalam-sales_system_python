@@ -199,7 +199,7 @@ def load_database():
                 required_sections = [
                     'users', 'products', 'customers', 'categories', 'suppliers',
                     'sales', 'purchases', 'inventory_movements', 'partners',
-                    'balance_history', 'activity_log', 'settings', 'reports_cache'
+                    'balance_history', 'activity_log', 'settings', 'reports_cache', 'returns'
                 ]
                 for section in required_sections:
                     if section not in data:
@@ -1200,6 +1200,7 @@ def complete_sale():
 
         sale_data = request.json
         cart_items = sale_data.get('items', [])
+        returns_data = sale_data.get('returns', [])  # إضافة المردودات
         customer_id = sale_data.get('customer_id')
         payment_method = sale_data.get('payment_method', 'نقدي')
         discount_amount = float(sale_data.get('discount_amount', 0))
@@ -1209,8 +1210,18 @@ def complete_sale():
         if not cart_items:
             return jsonify({'success': False, 'message': 'السلة فارغة'})
 
-        # حساب المجاميع
-        subtotal = sum(item.get('total', 0) for item in cart_items)
+        # حساب المجاميع مع خصم المردودات
+        subtotal = 0
+        returns_amount = 0
+        
+        for item in cart_items:
+            item_return_qty = item.get('return_quantity', 0)
+            effective_qty = item.get('quantity', 0) - item_return_qty
+            item_price = item.get('price', 0)
+            
+            subtotal += effective_qty * item_price
+            returns_amount += item_return_qty * item_price
+        
         tax_amount = (subtotal - discount_amount) * SYSTEM_CONFIG.get('tax_rate', 0.15)
         total_amount = subtotal - discount_amount + tax_amount
 
@@ -1225,6 +1236,8 @@ def complete_sale():
             'customer_id': customer_id,
             'customer_name': customers.get(customer_id, {}).get('name', 'عميل عادي') if customer_id else 'عميل عادي',
             'items': cart_items,
+            'returns': returns_data,  # إضافة المردودات
+            'returns_amount': returns_amount,  # مبلغ المردودات
             'subtotal': subtotal,
             'discount_amount': discount_amount,
             'tax_amount': tax_amount,
@@ -1241,27 +1254,49 @@ def complete_sale():
         for item in cart_items:
             product_id = item['product_id']
             quantity = item['quantity']
+            return_quantity = item.get('return_quantity', 0)
+            effective_quantity = quantity - return_quantity  # الكمية الفعلية المباعة
 
             if product_id in products:
-                products[product_id]['stock_quantity'] -= quantity
+                products[product_id]['stock_quantity'] -= effective_quantity
 
-                # تسجيل حركة المخزون
-                movement_id = str(uuid.uuid4())
-                inventory_movements = data.get('inventory_movements', {})
-                inventory_movements[movement_id] = {
-                    'id': movement_id,
-                    'product_id': product_id,
-                    'product_name': products[product_id]['name'],
-                    'type': 'out',
-                    'quantity': quantity,
-                    'reason': 'sale',
-                    'reference_id': sale_id,
-                    'reference_type': 'sale',
-                    'date': datetime.now().isoformat(),
-                    'user_id': session['user_id'],
-                    'notes': f'بيع - فاتورة رقم {invoice_number}'
-                }
-                data['inventory_movements'] = inventory_movements
+                # تسجيل حركة المخزون للبيع
+                if effective_quantity > 0:
+                    movement_id = str(uuid.uuid4())
+                    inventory_movements = data.get('inventory_movements', {})
+                    inventory_movements[movement_id] = {
+                        'id': movement_id,
+                        'product_id': product_id,
+                        'product_name': products[product_id]['name'],
+                        'type': 'out',
+                        'quantity': effective_quantity,
+                        'reason': 'sale',
+                        'reference_id': sale_id,
+                        'reference_type': 'sale',
+                        'date': datetime.now().isoformat(),
+                        'user_id': session['user_id'],
+                        'notes': f'بيع - فاتورة رقم {invoice_number} (بعد خصم المردودات: {return_quantity})'
+                    }
+                    data['inventory_movements'] = inventory_movements
+                
+                # تسجيل حركة المخزون للمردودات (إرجاع للمخزون)
+                if return_quantity > 0:
+                    return_movement_id = str(uuid.uuid4())
+                    inventory_movements = data.get('inventory_movements', {})
+                    inventory_movements[return_movement_id] = {
+                        'id': return_movement_id,
+                        'product_id': product_id,
+                        'product_name': products[product_id]['name'],
+                        'type': 'in',
+                        'quantity': return_quantity,
+                        'reason': 'return',
+                        'reference_id': sale_id,
+                        'reference_type': 'sale_return',
+                        'date': datetime.now().isoformat(),
+                        'user_id': session['user_id'],
+                        'notes': f'مردود من فاتورة رقم {invoice_number}'
+                    }
+                    data['inventory_movements'] = inventory_movements
 
         # تحديث رصيد العميل إذا كان الدفع آجل
         if customer_id and payment_method == 'آجل':
@@ -1301,6 +1336,90 @@ def complete_sale():
 
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)})
+
+@app.route('/api/pos/process-returns', methods=['POST'])
+@require_permission('pos')
+def process_returns():
+    """معالجة المردودات من السلة"""
+    try:
+        data = load_database()
+        products = data.get('products', {})
+        returns_data = data.get('returns', {})
+        
+        returns_list = request.json.get('returns', [])
+        
+        if not returns_list:
+            return jsonify({'success': True, 'message': 'لا توجد مردودات للمعالجة'})
+        
+        processed_returns = []
+        
+        for return_item in returns_list:
+            product_id = return_item.get('product_id')
+            quantity = int(return_item.get('quantity', 0))
+            price = float(return_item.get('price', 0))
+            reason = return_item.get('reason', 'غير محدد')
+            
+            if product_id in products and quantity > 0:
+                # إرجاع الكمية إلى المخزون
+                products[product_id]['stock_quantity'] += quantity
+                
+                # تسجيل حركة المخزون
+                movement_id = str(uuid.uuid4())
+                inventory_movements = data.get('inventory_movements', {})
+                inventory_movements[movement_id] = {
+                    'id': movement_id,
+                    'product_id': product_id,
+                    'product_name': products[product_id]['name'],
+                    'type': 'in',
+                    'quantity': quantity,
+                    'reason': 'return',
+                    'reference_type': 'return',
+                    'date': datetime.now().isoformat(),
+                    'user_id': session['user_id'],
+                    'notes': f'مردود - السبب: {reason}'
+                }
+                data['inventory_movements'] = inventory_movements
+                
+                # تسجيل المردود
+                return_id = str(uuid.uuid4())
+                return_record = {
+                    'id': return_id,
+                    'product_id': product_id,
+                    'product_name': products[product_id]['name'],
+                    'quantity': quantity,
+                    'price': price,
+                    'total': quantity * price,
+                    'reason': reason,
+                    'date': datetime.now().isoformat(),
+                    'processed_by': session['user_id'],
+                    'status': 'processed'
+                }
+                
+                returns_data[return_id] = return_record
+                processed_returns.append(return_record)
+        
+        # حفظ البيانات
+        data['products'] = products
+        data['returns'] = returns_data
+        
+        if save_database(data):
+            # تسجيل النشاط
+            log_activity(session['user_id'], 'process_returns', {
+                'returns_count': len(processed_returns),
+                'total_items': sum(r['quantity'] for r in processed_returns)
+            })
+            
+            return jsonify({
+                'success': True,
+                'message': f'تم معالجة {len(processed_returns)} مردود بنجاح',
+                'processed_returns': processed_returns
+            })
+        else:
+            return jsonify({'success': False, 'message': 'خطأ في حفظ البيانات'})
+            
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})
+
 # ===== إدارة المنتجات =====
 
 @app.route('/products')

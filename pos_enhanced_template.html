@@ -680,6 +680,10 @@
                         <span>الخصم:</span>
                         <span id="discount">0.00 {{ system_config.currency }}</span>
                     </div>
+                    <div class="summary-row" id="returnsRow" style="display: none; color: #dc3545;">
+                        <span>المردودات:</span>
+                        <span id="returns">0.00 {{ system_config.currency }}</span>
+                    </div>
                     <div class="summary-row">
                         <span>الضريبة ({{ system_config.tax_rate * 100 }}%):</span>
                         <span id="tax">0.00 {{ system_config.currency }}</span>
@@ -704,6 +708,10 @@
                         <button class="btn btn-clear" onclick="clearCart()">
                             <i class="fas fa-trash me-2"></i>
                             تفريغ السلة (F6)
+                        </button>
+                        <button class="btn btn-warning btn-sm" onclick="clearAllReturns()" id="clearReturnsBtn" style="display: none;">
+                            <i class="fas fa-undo me-1"></i>
+                            إلغاء المردودات
                         </button>
                     </div>
                 </div>
@@ -892,27 +900,41 @@
                 `;
             } else {
                 // جدول أفقي للأصناف
-                let table = `<div style="overflow-x:auto;"><table class="cart-table" style="width:100%; min-width:600px; border-collapse:collapse; text-align:center;">
+                let table = `<div style="overflow-x:auto;"><table class="cart-table" style="width:100%; min-width:700px; border-collapse:collapse; text-align:center;">
                     <thead>
                         <tr style="background:#f8f9fa;">
                             <th>المنتج</th>
                             <th>الكمية</th>
                             <th>سعر القطعة</th>
                             <th>المجموع</th>
+                            <th>مردود</th>
                             <th>تعديل</th>
                         </tr>
                     </thead>
                     <tbody>`;
                 cart.forEach((item, index) => {
-                    table += `<tr>
-                        <td style="padding:4px 2px;">${item.name}</td>
+                    const returnQuantity = item.return_quantity || 0;
+                    const isReturned = returnQuantity > 0;
+                    const remainingQuantity = item.quantity - returnQuantity;
+                    const effectiveTotal = (item.price * remainingQuantity).toFixed(2);
+                    
+                    table += `<tr style="${isReturned ? 'background-color: #f8f9fa;' : ''}">
+                        <td style="padding:4px 2px;">${item.name} ${isReturned ? '<span style="color:#dc3545;font-size:0.8em;">(مردود جزئي)</span>' : ''}</td>
                         <td style="padding:4px 2px;">
                             <input type="number" class="quantity-input" value="${item.quantity}" min="1" max="${item.max_quantity}" onchange="setQuantity(${index}, this.value)" style="width:50px;">
+                            ${returnQuantity > 0 ? `<br><small style="color:#dc3545;">مردود: ${returnQuantity}</small>` : ''}
                         </td>
                         <td style="padding:4px 2px;">
                             <input type="number" class="price-input" value="${item.price.toFixed(2)}" onchange="updateItemPrice(${index}, this.value)" step="0.01" min="0" style="width:80px;">
                         </td>
-                        <td style="padding:4px 2px;">${item.total.toFixed(2)} {{ system_config.currency }}</td>
+                        <td style="padding:4px 2px;">${effectiveTotal} {{ system_config.currency }}
+                            ${returnQuantity > 0 ? `<br><small style="color:#dc3545;text-decoration:line-through;">الأصلي: ${item.total.toFixed(2)}</small>` : ''}
+                        </td>
+                        <td style="padding:4px 2px;">
+                            <button class="btn btn-sm btn-outline-warning" onclick="showReturnDialog(${index})" title="إرجاع السلعة" ${remainingQuantity <= 0 ? 'disabled' : ''}>
+                                <i class="fas fa-undo"></i>
+                            </button>
+                        </td>
                         <td style="padding:4px 2px;">
                             <button class="quantity-btn text-danger" onclick="removeFromCart(${index})"><i class="fas fa-trash"></i></button>
                         </td>
@@ -979,7 +1001,19 @@
         }
 
         function updateSummary() {
-            const subtotal = cart.reduce((sum, item) => sum + item.total, 0);
+            // حساب المجموع مع خصم المردودات
+            let subtotal = 0;
+            let totalReturns = 0;
+            
+            cart.forEach(item => {
+                const returnQuantity = item.return_quantity || 0;
+                const effectiveQuantity = item.quantity - returnQuantity;
+                const effectiveTotal = item.price * effectiveQuantity;
+                
+                subtotal += effectiveTotal;
+                totalReturns += (item.price * returnQuantity);
+            });
+            
             const discount = parseFloat(document.getElementById('discountInput').value) || 0;
             const tax = (subtotal - discount) * {{ system_config.tax_rate }};
             const total = subtotal - discount + tax;
@@ -988,12 +1022,25 @@
             document.getElementById('discount').textContent = `${discount.toFixed(2)} {{ system_config.currency }}`;
             document.getElementById('tax').textContent = `${tax.toFixed(2)} {{ system_config.currency }}`;
             document.getElementById('total').textContent = `${total.toFixed(2)} {{ system_config.currency }}`;
+            
+            // إظهار أو إخفاء صف المردودات
+            const returnsRow = document.getElementById('returnsRow');
+            const clearReturnsBtn = document.getElementById('clearReturnsBtn');
+            if (totalReturns > 0) {
+                document.getElementById('returns').textContent = `${totalReturns.toFixed(2)} {{ system_config.currency }}`;
+                returnsRow.style.display = 'flex';
+                clearReturnsBtn.style.display = 'inline-block';
+            } else {
+                returnsRow.style.display = 'none';
+                clearReturnsBtn.style.display = 'none';
+            }
         }
 
         function clearCart() {
             if (cart.length > 0) {
                 if (confirm('هل أنت متأكد من تفريغ السلة؟')) {
                     cart = [];
+                    window.cartReturns = [];
                     document.getElementById('discountInput').value = '';
                     updateCartDisplay();
                 }
@@ -1010,8 +1057,12 @@
             const customerId = document.getElementById('customerSelect').value;
             const discountAmount = parseFloat(document.getElementById('discountInput').value) || 0;
             
+            // تحضير بيانات المردودات
+            const returns = window.cartReturns || [];
+            
             const saleData = {
                 items: cart,
+                returns: returns,  // إضافة المردودات
                 customer_id: customerId,
                 payment_method: currentPaymentMethod,
                 discount_amount: discountAmount,
@@ -1167,6 +1218,84 @@
                         break;
                 }
             });
+        }
+
+        // Return item functionality
+        function showReturnDialog(itemIndex) {
+            const item = cart[itemIndex];
+            if (!item) return;
+            
+            const returnQuantity = item.return_quantity || 0;
+            const availableQuantity = item.quantity - returnQuantity;
+            
+            if (availableQuantity <= 0) {
+                alert('تم إرجاع جميع الكمية من هذا المنتج');
+                return;
+            }
+            
+            const returnAmount = prompt(`إرجاع ${item.name}\nالكمية المتاحة للإرجاع: ${availableQuantity}\nأدخل الكمية المراد إرجاعها:`, '1');
+            
+            if (returnAmount && !isNaN(returnAmount)) {
+                const returnQty = parseInt(returnAmount);
+                if (returnQty > 0 && returnQty <= availableQuantity) {
+                    returnItem(itemIndex, returnQty);
+                } else {
+                    alert('الكمية المدخلة غير صحيحة');
+                }
+            }
+        }
+        
+        function returnItem(itemIndex, returnQuantity) {
+            if (!cart[itemIndex]) return;
+            
+            const item = cart[itemIndex];
+            const currentReturns = item.return_quantity || 0;
+            const availableQuantity = item.quantity - currentReturns;
+            
+            if (returnQuantity > availableQuantity) {
+                alert('الكمية المطلوب إرجاعها أكبر من المتاح');
+                return;
+            }
+            
+            // تحديث كمية المردود
+            item.return_quantity = currentReturns + returnQuantity;
+            
+            // إضافة المردود إلى قائمة المردودات
+            if (!window.cartReturns) {
+                window.cartReturns = [];
+            }
+            
+            window.cartReturns.push({
+                product_id: item.product_id,
+                product_name: item.name,
+                quantity: returnQuantity,
+                price: item.price,
+                total: returnQuantity * item.price,
+                reason: 'عيب في السلعة', // يمكن تخصيصه لاحقاً
+                timestamp: new Date().toISOString()
+            });
+            
+            updateCartDisplay();
+            
+            // إظهار رسالة تأكيد
+            const remainingQty = item.quantity - item.return_quantity;
+            if (remainingQty === 0) {
+                alert(`تم إرجاع كامل الكمية من ${item.name}`);
+            } else {
+                alert(`تم إرجاع ${returnQuantity} من ${item.name}\nالكمية المتبقية: ${remainingQty}`);
+            }
+        }
+        
+        function clearAllReturns() {
+            if (confirm('هل أنت متأكد من إلغاء جميع المردودات؟')) {
+                // مسح جميع المردودات من السلة
+                cart.forEach(item => {
+                    delete item.return_quantity;
+                });
+                window.cartReturns = [];
+                updateCartDisplay();
+                alert('تم إلغاء جميع المردودات');
+            }
         }
 
         // Close modals when clicking outside
