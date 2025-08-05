@@ -1,0 +1,2307 @@
+{
+  "users": {
+    "admin": {
+      "id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "username": "admin",
+      "password_hash": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
+      "full_name": "مدير النظام",
+      "email": "admin@excellence-mobile.com",
+      "phone": "+966501234567",
+      "role": "admin",
+      "permissions": [
+        "all"
+      ],
+      "is_active": true,
+      "last_login": "2025-08-05T13:01:50.546748",
+      "created_at": "2025-08-04T19:33:30.740737",
+      "created_by": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "avatar": null,
+      "settings": {
+        "theme": "light",
+        "language": "ar",
+        "notifications": true,
+        "default_view": "dashboard"
+      }
+    },
+    "manager": {
+      "id": "f3394967-3a4b-4fbb-af26-c5fba15a3b7f",
+      "username": "manager",
+      "password_hash": "866485796cfa8d7c0cf7111640205b83076433547577511d81f8030ae99ecea5",
+      "full_name": "مدير المبيعات",
+      "email": "manager@excellence-mobile.com",
+      "phone": "+966502345678",
+      "role": "manager",
+      "permissions": [
+        "sales",
+        "customers",
+        "products",
+        "reports",
+        "pos",
+        "inventory",
+        "purchases"
+      ],
+      "is_active": false,
+      "last_login": null,
+      "created_at": "2025-08-04T19:33:30.740737",
+      "created_by": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "avatar": null,
+      "settings": {
+        "theme": "light",
+        "language": "ar",
+        "notifications": true,
+        "default_view": "pos"
+      },
+      "updated_at": "2025-08-04T23:25:33.413302",
+      "updated_by": "652ed256-db24-499d-ab54-3fed13a0df4f"
+    },
+    "cashier": {
+      "id": "07aede14-4aff-4db0-874f-ad41d9f5f090",
+      "username": "cashier",
+      "password_hash": "b4c94003c562bb0d89535eca77f07284fe560fd48a7cc1ed99f0a56263d616ba",
+      "full_name": "أمين الصندوق",
+      "email": "cashier@excellence-mobile.com",
+      "phone": "+966503456789",
+      "role": "cashier",
+      "permissions": [
+        "pos",
+        "customers",
+        "products",
+        "inventory"
+      ],
+      "is_active": true,
+      "last_login": null,
+      "created_at": "2025-08-04T19:33:30.740737",
+      "created_by": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "avatar": null,
+      "settings": {
+        "theme": "light",
+        "language": "ar",
+        "notifications": true,
+        "default_view": "pos"
+      }
+    }
+  },
+  "products": {
+    "2ee30840-b6b5-4cf2-9ce3-cccb0ad1bdcc": {
+      "id": "2ee30840-b6b5-4cf2-9ce3-cccb0ad1bdcc",
+      "name": "iPhone 15 Pro Max 256GB",
+      "sku": "IP15PM256",
+      "barcode": "BC2EE30840",
+      "category": "smartphones",
+      "subcategory": "iPhone",
+      "description": "أحدث إصدار من آيفون مع كاميرا متطورة وشاشة Super Retina XDR",
+      "cost_price": 3500.0,
+      "selling_price": 4200.0,
+      "wholesale_price": 3800.0,
+      "purchase_price": 3500.0,
+      "stock_quantity": 9,
+      "min_stock_level": 3,
+      "max_stock_level": 50,
+      "supplier_id": "",
+      "unit": "قطعة",
+      "weight": 0.221,
+      "dimensions": "159.9 × 76.7 × 8.25 مم",
+      "is_active": true,
+      "tax_rate": 0.15,
+      "discount_rate": 0,
+      "image_url": "",
+      "warranty_period": "12 شهر",
+      "brand": "Apple",
+      "model": "iPhone 15 Pro Max",
+      "color": "تيتانيوم طبيعي",
+      "storage": "256GB",
+      "notes": "منتج أصلي مع ضمان الوكيل",
+      "created_at": "2025-08-04T19:33:30.740737",
+      "created_by": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "updated_at": "2025-08-04T22:02:41.581415",
+      "updated_by": "652ed256-db24-499d-ab54-3fed13a0df4f"
+    },
+    "2b5d2e4e-4a15-4263-826a-f866acd65d26": {
+      "id": "2b5d2e4e-4a15-4263-826a-f866acd65d26",
+      "name": "Samsung Galaxy S24 Ultra 512GB",
+      "sku": "SGS24U512",
+      "barcode": "BC2B5D2E4E",
+      "category": "smartphones",
+      "subcategory": "Samsung",
+      "description": "هاتف سامسونج الرائد مع قلم S Pen وكاميرا 200 ميجابكسل",
+      "cost_price": 3200.0,
+      "selling_price": 3800.0,
+      "wholesale_price": 3500.0,
+      "purchase_price": 3200.0,
+      "stock_quantity": 7,
+      "min_stock_level": 3,
+      "max_stock_level": 40,
+      "supplier_id": "",
+      "unit": "قطعة",
+      "weight": 0.232,
+      "dimensions": "162.3 × 79.0 × 8.6 مم",
+      "is_active": true,
+      "tax_rate": 0.15,
+      "discount_rate": 0,
+      "image_url": "",
+      "warranty_period": "12 شهر",
+      "brand": "Samsung",
+      "model": "Galaxy S24 Ultra",
+      "color": "أسود تيتانيوم",
+      "storage": "512GB",
+      "notes": "منتج أصلي مع ضمان الوكيل",
+      "created_at": "2025-08-04T19:33:30.740737",
+      "created_by": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "updated_at": "2025-08-05T13:04:17.555308",
+      "updated_by": "652ed256-db24-499d-ab54-3fed13a0df4f"
+    },
+    "b54c0387-bab5-437f-9172-d368cc2191c6": {
+      "id": "b54c0387-bab5-437f-9172-d368cc2191c6",
+      "name": "شاحن لاسلكي سريع 15W",
+      "sku": "WC15W001",
+      "barcode": "BCB54C0387",
+      "category": "accessories",
+      "subcategory": "شواحن",
+      "description": "شاحن لاسلكي سريع متوافق مع جميع الهواتف الداعمة للشحن اللاسلكي",
+      "cost_price": 45.0,
+      "selling_price": 75.0,
+      "wholesale_price": 60.0,
+      "purchase_price": 45.0,
+      "stock_quantity": 8,
+      "min_stock_level": 5,
+      "max_stock_level": 100,
+      "supplier_id": "",
+      "unit": "قطعة",
+      "weight": 0.15,
+      "dimensions": "100 × 100 × 10 مم",
+      "is_active": true,
+      "tax_rate": 0.15,
+      "discount_rate": 0,
+      "image_url": "",
+      "warranty_period": "6 أشهر",
+      "brand": "Generic",
+      "model": "WC-15W",
+      "color": "أسود",
+      "storage": "",
+      "notes": "متوافق مع iPhone و Samsung",
+      "created_at": "2025-08-04T19:33:30.740737",
+      "created_by": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "updated_at": "2025-08-04T19:33:30.740737",
+      "updated_by": "652ed256-db24-499d-ab54-3fed13a0df4f"
+    }
+  },
+  "customers": {
+    "bde4dcb5-0e9b-4bb4-875a-99d2352f655d": {
+      "id": "bde4dcb5-0e9b-4bb4-875a-99d2352f655d",
+      "name": "أحمد محمد العلي",
+      "phone": "+966501234567",
+      "email": "ahmed.ali@email.com",
+      "address": "الرياض، حي النخيل، شارع الملك فهد",
+      "type": "تجزئة",
+      "tax_number": "",
+      "credit_limit": 0.0,
+      "payment_terms": "نقدي",
+      "discount_rate": 0.0,
+      "current_balance": 0.0,
+      "total_purchases": 4456.25,
+      "last_purchase_date": "2025-08-05T12:04:47.656047",
+      "is_active": true,
+      "notes": "عميل مميز",
+      "created_at": "2025-08-04T19:33:30.740737",
+      "created_by": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "updated_at": "2025-08-04T19:33:30.740737",
+      "updated_by": "652ed256-db24-499d-ab54-3fed13a0df4f"
+    },
+    "61dff224-aefc-4d8c-ac49-3901a645d693": {
+      "id": "61dff224-aefc-4d8c-ac49-3901a645d693",
+      "name": "امحمد الهرام",
+      "phone": "0910000000",
+      "email": "",
+      "address": "شارع الملاهي",
+      "type": "تجزئة",
+      "tax_number": "",
+      "credit_limit": 1000.0,
+      "payment_terms": "نقدي",
+      "discount_rate": 0.0,
+      "current_balance": 8075.0,
+      "total_purchases": 8075.0,
+      "last_purchase_date": "2025-08-05T13:28:18.112366",
+      "is_active": true,
+      "notes": "",
+      "created_at": "2025-08-04T22:55:56.435623",
+      "created_by": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "updated_at": "2025-08-04T22:55:56.435623",
+      "updated_by": "652ed256-db24-499d-ab54-3fed13a0df4f"
+    }
+  },
+  "categories": {
+    "smartphones": {
+      "name": "الهواتف الذكية",
+      "icon": "fa-mobile-alt",
+      "subcategories": [
+        "iPhone",
+        "Samsung",
+        "Huawei",
+        "Xiaomi",
+        "Oppo",
+        "Vivo",
+        "OnePlus",
+        "أخرى"
+      ]
+    },
+    "accessories": {
+      "name": "الإكسسوارات",
+      "icon": "fa-headphones",
+      "subcategories": [
+        "سماعات",
+        "شواحن",
+        "كابلات",
+        "حافظات",
+        "واقيات شاشة",
+        "حوامل",
+        "أخرى"
+      ]
+    },
+    "spare_parts": {
+      "name": "قطع الغيار",
+      "icon": "fa-tools",
+      "subcategories": [
+        "شاشات",
+        "بطاريات",
+        "كاميرات",
+        "سماعات داخلية",
+        "أزرار",
+        "فليكس",
+        "أخرى"
+      ]
+    },
+    "tablets": {
+      "name": "الأجهزة اللوحية",
+      "icon": "fa-tablet-alt",
+      "subcategories": [
+        "iPad",
+        "Samsung Tab",
+        "Huawei Tab",
+        "أخرى"
+      ]
+    },
+    "smartwatches": {
+      "name": "الساعات الذكية",
+      "icon": "fa-clock",
+      "subcategories": [
+        "Apple Watch",
+        "Samsung Watch",
+        "Huawei Watch",
+        "أخرى"
+      ]
+    },
+    "electronics": {
+      "name": "إلكترونيات أخرى",
+      "icon": "fa-microchip",
+      "subcategories": [
+        "سماعات بلوتوث",
+        "باور بانك",
+        "كاميرات",
+        "أجهزة ذكية",
+        "أخرى"
+      ]
+    }
+  },
+  "suppliers": {},
+  "sales": {
+    "5953b72b-81a1-466f-8e01-be5168db6993": {
+      "id": "5953b72b-81a1-466f-8e01-be5168db6993",
+      "invoice_number": "INV-20250804-0001",
+      "date": "2025-08-04T20:31:06.397718",
+      "customer_id": "",
+      "customer_name": "عميل عادي",
+      "items": [
+        {
+          "product_id": "b54c0387-bab5-437f-9172-d368cc2191c6",
+          "name": "شاحن لاسلكي سريع 15W",
+          "sku": "WC15W001",
+          "price": 75,
+          "quantity": 2,
+          "total": 150,
+          "sale_type": "retail",
+          "max_quantity": 25
+        },
+        {
+          "product_id": "2b5d2e4e-4a15-4263-826a-f866acd65d26",
+          "name": "Samsung Galaxy S24 Ultra 512GB",
+          "sku": "SGS24U512",
+          "price": 3800,
+          "quantity": 2,
+          "total": 7600,
+          "sale_type": "retail",
+          "max_quantity": 12
+        },
+        {
+          "product_id": "2ee30840-b6b5-4cf2-9ce3-cccb0ad1bdcc",
+          "name": "iPhone 15 Pro Max 256GB",
+          "sku": "IP15PM256",
+          "price": 4200,
+          "quantity": 2,
+          "total": 8400,
+          "sale_type": "retail",
+          "max_quantity": 15
+        }
+      ],
+      "subtotal": 16150,
+      "discount_amount": 0.0,
+      "tax_amount": 2422.5,
+      "total_amount": 18572.5,
+      "payment_method": "نقدي",
+      "status": "completed",
+      "notes": "",
+      "cashier_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "cashier_name": "مدير النظام",
+      "created_at": "2025-08-04T20:31:06.397718"
+    },
+    "5cb32fea-2f55-4a10-beb3-f8244003bb00": {
+      "id": "5cb32fea-2f55-4a10-beb3-f8244003bb00",
+      "invoice_number": "INV-20250804-0002",
+      "date": "2025-08-04T20:49:30.013381",
+      "customer_id": null,
+      "customer_name": "عميل عادي",
+      "items": [
+        {
+          "product_id": "2ee30840-b6b5-4cf2-9ce3-cccb0ad1bdcc",
+          "name": "iPhone 15 Pro Max 256GB",
+          "sku": "IP15PM256",
+          "price": 0,
+          "quantity": 2,
+          "total": 0,
+          "sale_type": "retail"
+        },
+        {
+          "product_id": "2b5d2e4e-4a15-4263-826a-f866acd65d26",
+          "name": "Samsung Galaxy S24 Ultra 512GB",
+          "sku": "SGS24U512",
+          "price": 0,
+          "quantity": 2,
+          "total": 0,
+          "sale_type": "retail"
+        },
+        {
+          "product_id": "b54c0387-bab5-437f-9172-d368cc2191c6",
+          "name": "شاحن لاسلكي سريع 15W",
+          "sku": "WC15W001",
+          "price": 0,
+          "quantity": 2,
+          "total": 0,
+          "sale_type": "retail"
+        }
+      ],
+      "subtotal": 0,
+      "discount_amount": 0.0,
+      "tax_amount": 0.0,
+      "total_amount": 0.0,
+      "payment_method": "نقدي",
+      "status": "completed",
+      "notes": "",
+      "cashier_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "cashier_name": "مدير النظام",
+      "created_at": "2025-08-04T20:49:30.013381"
+    },
+    "9971ee69-8c47-4c4b-90fe-a563a3f5e2d1": {
+      "id": "9971ee69-8c47-4c4b-90fe-a563a3f5e2d1",
+      "invoice_number": "INV-20250804-0003",
+      "date": "2025-08-04T22:42:42.092071",
+      "customer_id": "",
+      "customer_name": "عميل عادي",
+      "items": [
+        {
+          "product_id": "b54c0387-bab5-437f-9172-d368cc2191c6",
+          "name": "شاحن لاسلكي سريع 15W",
+          "sku": "WC15W001",
+          "price": 0,
+          "quantity": 1,
+          "total": 0,
+          "sale_type": "retail",
+          "max_quantity": 21
+        },
+        {
+          "product_id": "2b5d2e4e-4a15-4263-826a-f866acd65d26",
+          "name": "Samsung Galaxy S24 Ultra 512GB",
+          "sku": "SGS24U512",
+          "price": 0,
+          "quantity": 1,
+          "total": 0,
+          "sale_type": "retail",
+          "max_quantity": 12
+        }
+      ],
+      "subtotal": 0,
+      "discount_amount": 0.0,
+      "tax_amount": 0.0,
+      "total_amount": 0.0,
+      "payment_method": "نقدي",
+      "status": "completed",
+      "notes": "",
+      "cashier_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "cashier_name": "مدير النظام",
+      "created_at": "2025-08-04T22:42:42.092071"
+    },
+    "ba9e6936-9d0f-465f-a4bd-a89f0e176bb4": {
+      "id": "ba9e6936-9d0f-465f-a4bd-a89f0e176bb4",
+      "invoice_number": "INV-20250804-0004",
+      "date": "2025-08-04T23:56:55.406994",
+      "customer_id": "",
+      "customer_name": "عميل عادي",
+      "items": [
+        {
+          "product_id": "2b5d2e4e-4a15-4263-826a-f866acd65d26",
+          "name": "Samsung Galaxy S24 Ultra 512GB",
+          "sku": "SGS24U512",
+          "price": 0,
+          "quantity": 2,
+          "total": 0,
+          "sale_type": "retail",
+          "max_quantity": 11
+        },
+        {
+          "product_id": "2ee30840-b6b5-4cf2-9ce3-cccb0ad1bdcc",
+          "name": "iPhone 15 Pro Max 256GB",
+          "sku": "IP15PM256",
+          "price": 0,
+          "quantity": 1,
+          "total": 0,
+          "sale_type": "retail",
+          "max_quantity": 21
+        },
+        {
+          "product_id": "b54c0387-bab5-437f-9172-d368cc2191c6",
+          "name": "شاحن لاسلكي سريع 15W",
+          "sku": "WC15W001",
+          "price": 0,
+          "quantity": 1,
+          "total": 0,
+          "sale_type": "retail",
+          "max_quantity": 20
+        }
+      ],
+      "subtotal": 0,
+      "discount_amount": 0.0,
+      "tax_amount": 0.0,
+      "total_amount": 0.0,
+      "payment_method": "نقدي",
+      "status": "completed",
+      "notes": "",
+      "cashier_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "cashier_name": "مدير النظام",
+      "created_at": "2025-08-04T23:56:55.406994"
+    },
+    "7f6e6800-6495-404f-9216-8d372d333f62": {
+      "id": "7f6e6800-6495-404f-9216-8d372d333f62",
+      "invoice_number": "INV-20250805-0005",
+      "date": "2025-08-05T00:05:07.850298",
+      "customer_id": "",
+      "customer_name": "عميل عادي",
+      "items": [
+        {
+          "product_id": "b54c0387-bab5-437f-9172-d368cc2191c6",
+          "name": "شاحن لاسلكي سريع 15W",
+          "sku": "WC15W001",
+          "price": 0,
+          "quantity": 1,
+          "total": 0,
+          "sale_type": "retail",
+          "max_quantity": 19
+        },
+        {
+          "product_id": "2b5d2e4e-4a15-4263-826a-f866acd65d26",
+          "name": "Samsung Galaxy S24 Ultra 512GB",
+          "sku": "SGS24U512",
+          "price": 0,
+          "quantity": 1,
+          "total": 0,
+          "sale_type": "retail",
+          "max_quantity": 9
+        },
+        {
+          "product_id": "2ee30840-b6b5-4cf2-9ce3-cccb0ad1bdcc",
+          "name": "iPhone 15 Pro Max 256GB",
+          "sku": "IP15PM256",
+          "price": 0,
+          "quantity": 1,
+          "total": 0,
+          "sale_type": "retail",
+          "max_quantity": 20
+        }
+      ],
+      "subtotal": 0,
+      "discount_amount": 0.0,
+      "tax_amount": 0.0,
+      "total_amount": 0.0,
+      "payment_method": "نقدي",
+      "status": "completed",
+      "notes": "",
+      "cashier_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "cashier_name": "مدير النظام",
+      "created_at": "2025-08-05T00:05:07.850298"
+    },
+    "74dbff6b-8115-4f1e-b2f3-318c72b9a15f": {
+      "id": "74dbff6b-8115-4f1e-b2f3-318c72b9a15f",
+      "invoice_number": "INV-20250805-0006",
+      "date": "2025-08-05T12:03:44.970926",
+      "customer_id": "",
+      "customer_name": "عميل عادي",
+      "items": [
+        {
+          "product_id": "2ee30840-b6b5-4cf2-9ce3-cccb0ad1bdcc",
+          "name": "iPhone 15 Pro Max 256GB",
+          "sku": "IP15PM256",
+          "price": 4200,
+          "quantity": 1,
+          "total": 4200,
+          "sale_type": "retail",
+          "max_quantity": 19
+        },
+        {
+          "product_id": "2b5d2e4e-4a15-4263-826a-f866acd65d26",
+          "name": "Samsung Galaxy S24 Ultra 512GB",
+          "sku": "SGS24U512",
+          "price": 3800,
+          "quantity": 1,
+          "total": 3800,
+          "sale_type": "retail",
+          "max_quantity": 8
+        },
+        {
+          "product_id": "b54c0387-bab5-437f-9172-d368cc2191c6",
+          "name": "شاحن لاسلكي سريع 15W",
+          "sku": "WC15W001",
+          "price": 75,
+          "quantity": 1,
+          "total": 75,
+          "sale_type": "retail",
+          "max_quantity": 18
+        }
+      ],
+      "subtotal": 8075,
+      "discount_amount": 0.0,
+      "tax_amount": 1211.25,
+      "total_amount": 9286.25,
+      "payment_method": "نقدي",
+      "status": "completed",
+      "notes": "",
+      "cashier_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "cashier_name": "مدير النظام",
+      "created_at": "2025-08-05T12:03:44.970926"
+    },
+    "2ec45bf1-be10-4901-b310-0946b33ccec8": {
+      "id": "2ec45bf1-be10-4901-b310-0946b33ccec8",
+      "invoice_number": "INV-20250805-0007",
+      "date": "2025-08-05T12:04:47.656047",
+      "customer_id": "bde4dcb5-0e9b-4bb4-875a-99d2352f655d",
+      "customer_name": "أحمد محمد العلي",
+      "items": [
+        {
+          "product_id": "b54c0387-bab5-437f-9172-d368cc2191c6",
+          "name": "شاحن لاسلكي سريع 15W",
+          "sku": "WC15W001",
+          "price": 75,
+          "quantity": 1,
+          "total": 75,
+          "sale_type": "retail",
+          "max_quantity": 18
+        },
+        {
+          "product_id": "2b5d2e4e-4a15-4263-826a-f866acd65d26",
+          "name": "Samsung Galaxy S24 Ultra 512GB",
+          "sku": "SGS24U512",
+          "price": 3800,
+          "quantity": 1,
+          "total": 3800,
+          "sale_type": "retail",
+          "max_quantity": 8
+        }
+      ],
+      "subtotal": 3875,
+      "discount_amount": 0.0,
+      "tax_amount": 581.25,
+      "total_amount": 4456.25,
+      "payment_method": "نقدي",
+      "status": "completed",
+      "notes": "",
+      "cashier_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "cashier_name": "مدير النظام",
+      "created_at": "2025-08-05T12:04:47.656047"
+    },
+    "aa6d70b6-3007-450b-980f-26c27938f326": {
+      "id": "aa6d70b6-3007-450b-980f-26c27938f326",
+      "invoice_number": "INV-20250805-0008",
+      "date": "2025-08-05T12:18:40.100221",
+      "customer_id": "",
+      "customer_name": "عميل عادي",
+      "items": [
+        {
+          "product_id": "b54c0387-bab5-437f-9172-d368cc2191c6",
+          "name": "شاحن لاسلكي سريع 15W",
+          "sku": "WC15W001",
+          "price": 75,
+          "quantity": 1,
+          "total": 75,
+          "sale_type": "retail",
+          "max_quantity": 16
+        },
+        {
+          "product_id": "2b5d2e4e-4a15-4263-826a-f866acd65d26",
+          "name": "Samsung Galaxy S24 Ultra 512GB",
+          "sku": "SGS24U512",
+          "price": 3800,
+          "quantity": 1,
+          "total": 3800,
+          "sale_type": "retail",
+          "max_quantity": 6
+        },
+        {
+          "product_id": "2ee30840-b6b5-4cf2-9ce3-cccb0ad1bdcc",
+          "name": "iPhone 15 Pro Max 256GB",
+          "sku": "IP15PM256",
+          "price": 4200,
+          "quantity": 1,
+          "total": 4200,
+          "sale_type": "retail",
+          "max_quantity": 18
+        }
+      ],
+      "subtotal": 8075,
+      "discount_amount": 0.0,
+      "tax_amount": 1211.25,
+      "total_amount": 9286.25,
+      "payment_method": "نقدي",
+      "status": "completed",
+      "notes": "",
+      "cashier_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "cashier_name": "مدير النظام",
+      "created_at": "2025-08-05T12:18:40.100221"
+    },
+    "bf1657fb-dd91-4d9c-aac6-c2b3b2cc6450": {
+      "id": "bf1657fb-dd91-4d9c-aac6-c2b3b2cc6450",
+      "invoice_number": "INV-20250805-0009",
+      "date": "2025-08-05T12:28:46.087772",
+      "customer_id": "",
+      "customer_name": "عميل عادي",
+      "items": [
+        {
+          "product_id": "b54c0387-bab5-437f-9172-d368cc2191c6",
+          "name": "شاحن لاسلكي سريع 15W",
+          "sku": "WC15W001",
+          "price": 75,
+          "quantity": 1,
+          "total": 75,
+          "sale_type": "retail",
+          "max_quantity": 15
+        },
+        {
+          "product_id": "2b5d2e4e-4a15-4263-826a-f866acd65d26",
+          "name": "Samsung Galaxy S24 Ultra 512GB",
+          "sku": "SGS24U512",
+          "price": 3800,
+          "quantity": 1,
+          "total": 3800,
+          "sale_type": "retail",
+          "max_quantity": 5
+        },
+        {
+          "product_id": "2ee30840-b6b5-4cf2-9ce3-cccb0ad1bdcc",
+          "name": "iPhone 15 Pro Max 256GB",
+          "sku": "IP15PM256",
+          "price": 4200,
+          "quantity": 1,
+          "total": 4200,
+          "sale_type": "retail",
+          "max_quantity": 17
+        }
+      ],
+      "subtotal": 8075,
+      "discount_amount": 0.0,
+      "tax_amount": 1211.25,
+      "total_amount": 9286.25,
+      "payment_method": "نقدي",
+      "status": "completed",
+      "notes": "",
+      "cashier_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "cashier_name": "مدير النظام",
+      "created_at": "2025-08-05T12:28:46.087772"
+    },
+    "35371fdd-6bcf-498e-948e-a27307dfb2d4": {
+      "id": "35371fdd-6bcf-498e-948e-a27307dfb2d4",
+      "invoice_number": "INV-20250805-0010",
+      "date": "2025-08-05T12:42:15.382492",
+      "customer_id": "",
+      "customer_name": "عميل عادي",
+      "items": [
+        {
+          "product_id": "2b5d2e4e-4a15-4263-826a-f866acd65d26",
+          "name": "Samsung Galaxy S24 Ultra 512GB",
+          "sku": "SGS24U512",
+          "price": 3800,
+          "quantity": 2,
+          "total": 7600,
+          "sale_type": "retail",
+          "max_quantity": 4
+        },
+        {
+          "product_id": "2ee30840-b6b5-4cf2-9ce3-cccb0ad1bdcc",
+          "name": "iPhone 15 Pro Max 256GB",
+          "sku": "IP15PM256",
+          "price": 4200,
+          "quantity": 2,
+          "total": 8400,
+          "sale_type": "retail",
+          "max_quantity": 16
+        },
+        {
+          "product_id": "b54c0387-bab5-437f-9172-d368cc2191c6",
+          "name": "شاحن لاسلكي سريع 15W",
+          "sku": "WC15W001",
+          "price": 75,
+          "quantity": 1,
+          "total": 75,
+          "sale_type": "retail",
+          "max_quantity": 14
+        }
+      ],
+      "subtotal": 16075,
+      "discount_amount": 0.0,
+      "tax_amount": 2411.25,
+      "total_amount": 18486.25,
+      "payment_method": "نقدي",
+      "status": "completed",
+      "notes": "",
+      "cashier_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "cashier_name": "مدير النظام",
+      "created_at": "2025-08-05T12:42:15.382492"
+    },
+    "8d08cd28-a22b-4176-9bea-bab97dc96868": {
+      "id": "8d08cd28-a22b-4176-9bea-bab97dc96868",
+      "invoice_number": "INV-20250805-0011",
+      "date": "2025-08-05T12:46:11.651699",
+      "customer_id": "",
+      "customer_name": "عميل عادي",
+      "items": [
+        {
+          "product_id": "2ee30840-b6b5-4cf2-9ce3-cccb0ad1bdcc",
+          "name": "iPhone 15 Pro Max 256GB",
+          "sku": "IP15PM256",
+          "price": 4200,
+          "quantity": 1,
+          "total": 4200,
+          "sale_type": "retail",
+          "max_quantity": 14
+        },
+        {
+          "product_id": "b54c0387-bab5-437f-9172-d368cc2191c6",
+          "name": "شاحن لاسلكي سريع 15W",
+          "sku": "WC15W001",
+          "price": 75,
+          "quantity": 1,
+          "total": 75,
+          "sale_type": "retail",
+          "max_quantity": 13
+        }
+      ],
+      "subtotal": 4275,
+      "discount_amount": 0.0,
+      "tax_amount": 641.25,
+      "total_amount": 4916.25,
+      "payment_method": "نقدي",
+      "status": "completed",
+      "notes": "",
+      "cashier_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "cashier_name": "مدير النظام",
+      "created_at": "2025-08-05T12:46:11.651699"
+    },
+    "5364a600-e5db-4c8a-bc35-7b7541956302": {
+      "id": "5364a600-e5db-4c8a-bc35-7b7541956302",
+      "invoice_number": "INV-20250805-0012",
+      "date": "2025-08-05T13:01:59.445701",
+      "customer_id": "",
+      "customer_name": "عميل عادي",
+      "items": [
+        {
+          "product_id": "2ee30840-b6b5-4cf2-9ce3-cccb0ad1bdcc",
+          "name": "iPhone 15 Pro Max 256GB",
+          "sku": "IP15PM256",
+          "price": 4200,
+          "quantity": 1,
+          "total": 4200,
+          "sale_type": "retail",
+          "max_quantity": 13
+        }
+      ],
+      "subtotal": 4200,
+      "discount_amount": 0.0,
+      "tax_amount": 630.0,
+      "total_amount": 4830.0,
+      "payment_method": "نقدي",
+      "status": "completed",
+      "notes": "",
+      "cashier_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "cashier_name": "مدير النظام",
+      "created_at": "2025-08-05T13:01:59.445701"
+    },
+    "a52625b2-c1eb-4541-8d8c-0ad0162e04d7": {
+      "id": "a52625b2-c1eb-4541-8d8c-0ad0162e04d7",
+      "invoice_number": "INV-20250805-0013",
+      "date": "2025-08-05T13:05:38.819195",
+      "customer_id": "",
+      "customer_name": "عميل عادي",
+      "items": [
+        {
+          "product_id": "b54c0387-bab5-437f-9172-d368cc2191c6",
+          "name": "شاحن لاسلكي سريع 15W",
+          "sku": "WC15W001",
+          "price": 75,
+          "quantity": 1,
+          "total": 75,
+          "sale_type": "retail",
+          "max_quantity": 12
+        }
+      ],
+      "subtotal": 75,
+      "discount_amount": 0.0,
+      "tax_amount": 11.25,
+      "total_amount": 86.25,
+      "payment_method": "نقدي",
+      "status": "completed",
+      "notes": "",
+      "cashier_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "cashier_name": "مدير النظام",
+      "created_at": "2025-08-05T13:05:38.819195"
+    },
+    "f764dba1-709f-4d54-a321-ef42064831e4": {
+      "id": "f764dba1-709f-4d54-a321-ef42064831e4",
+      "invoice_number": "INV-20250805-0014",
+      "date": "2025-08-05T13:28:18.112366",
+      "customer_id": "61dff224-aefc-4d8c-ac49-3901a645d693",
+      "customer_name": "امحمد الهرام",
+      "items": [
+        {
+          "product_id": "2ee30840-b6b5-4cf2-9ce3-cccb0ad1bdcc",
+          "name": "iPhone 15 Pro Max 256GB",
+          "sku": "IP15PM256",
+          "price": 4200,
+          "quantity": 1,
+          "total": 4200,
+          "sale_type": "retail",
+          "max_quantity": 12
+        },
+        {
+          "product_id": "2b5d2e4e-4a15-4263-826a-f866acd65d26",
+          "name": "Samsung Galaxy S24 Ultra 512GB",
+          "sku": "SGS24U512",
+          "price": 3800,
+          "quantity": 1,
+          "total": 3800,
+          "sale_type": "retail",
+          "max_quantity": 10
+        },
+        {
+          "product_id": "b54c0387-bab5-437f-9172-d368cc2191c6",
+          "name": "شاحن لاسلكي سريع 15W",
+          "sku": "WC15W001",
+          "price": 75,
+          "quantity": 1,
+          "total": 75,
+          "sale_type": "retail",
+          "max_quantity": 11
+        }
+      ],
+      "subtotal": 8075,
+      "discount_amount": 0.0,
+      "tax_amount": 0.0,
+      "total_amount": 8075.0,
+      "payment_method": "آجل",
+      "status": "completed",
+      "notes": "",
+      "cashier_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "cashier_name": "مدير النظام",
+      "created_at": "2025-08-05T13:28:18.112366"
+    },
+    "f87dc3c4-c529-47bb-9b5c-eea4d11f6b93": {
+      "id": "f87dc3c4-c529-47bb-9b5c-eea4d11f6b93",
+      "invoice_number": "INV-20250805-0015",
+      "date": "2025-08-05T13:30:14.064504",
+      "customer_id": "",
+      "customer_name": "عميل عادي",
+      "items": [
+        {
+          "product_id": "b54c0387-bab5-437f-9172-d368cc2191c6",
+          "name": "شاحن لاسلكي سريع 15W",
+          "sku": "WC15W001",
+          "price": 75,
+          "quantity": 1,
+          "total": 75,
+          "sale_type": "retail",
+          "max_quantity": 10
+        },
+        {
+          "product_id": "2b5d2e4e-4a15-4263-826a-f866acd65d26",
+          "name": "Samsung Galaxy S24 Ultra 512GB",
+          "sku": "SGS24U512",
+          "price": 3800,
+          "quantity": 1,
+          "total": 3800,
+          "sale_type": "retail",
+          "max_quantity": 9
+        },
+        {
+          "product_id": "2ee30840-b6b5-4cf2-9ce3-cccb0ad1bdcc",
+          "name": "iPhone 15 Pro Max 256GB",
+          "sku": "IP15PM256",
+          "price": 4200,
+          "quantity": 1,
+          "total": 4200,
+          "sale_type": "retail",
+          "max_quantity": 11
+        }
+      ],
+      "subtotal": 8075,
+      "discount_amount": 0.0,
+      "tax_amount": 0.0,
+      "total_amount": 8075.0,
+      "payment_method": "نقدي",
+      "status": "completed",
+      "notes": "",
+      "cashier_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "cashier_name": "مدير النظام",
+      "created_at": "2025-08-05T13:30:14.064504"
+    },
+    "2d718014-65ec-4d14-931b-e79025195696": {
+      "id": "2d718014-65ec-4d14-931b-e79025195696",
+      "invoice_number": "INV-20250805-0016",
+      "date": "2025-08-05T13:41:50.214396",
+      "customer_id": "",
+      "customer_name": "عميل عادي",
+      "items": [
+        {
+          "product_id": "b54c0387-bab5-437f-9172-d368cc2191c6",
+          "name": "شاحن لاسلكي سريع 15W",
+          "sku": "WC15W001",
+          "price": 75,
+          "quantity": 1,
+          "total": 75,
+          "sale_type": "retail",
+          "max_quantity": 10
+        },
+        {
+          "product_id": "2b5d2e4e-4a15-4263-826a-f866acd65d26",
+          "name": "Samsung Galaxy S24 Ultra 512GB",
+          "sku": "SGS24U512",
+          "price": 3800,
+          "quantity": 1,
+          "total": 3800,
+          "sale_type": "retail",
+          "max_quantity": 9
+        },
+        {
+          "product_id": "2ee30840-b6b5-4cf2-9ce3-cccb0ad1bdcc",
+          "name": "iPhone 15 Pro Max 256GB",
+          "sku": "IP15PM256",
+          "price": 4200,
+          "quantity": 1,
+          "total": 4200,
+          "sale_type": "retail",
+          "max_quantity": 11
+        }
+      ],
+      "subtotal": 8075,
+      "discount_amount": 0.0,
+      "tax_amount": 0.0,
+      "total_amount": 8075.0,
+      "payment_method": "نقدي",
+      "status": "completed",
+      "notes": "",
+      "cashier_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "cashier_name": "مدير النظام",
+      "created_at": "2025-08-05T13:41:50.214396"
+    }
+  },
+  "purchases": {},
+  "inventory_movements": {
+    "a83624eb-e4f0-4cdb-9b3d-946d769339d3": {
+      "id": "a83624eb-e4f0-4cdb-9b3d-946d769339d3",
+      "product_id": "b54c0387-bab5-437f-9172-d368cc2191c6",
+      "product_name": "شاحن لاسلكي سريع 15W",
+      "type": "out",
+      "quantity": 2,
+      "reason": "sale",
+      "reference_id": "5953b72b-81a1-466f-8e01-be5168db6993",
+      "reference_type": "sale",
+      "date": "2025-08-04T20:31:06.397718",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250804-0001"
+    },
+    "f9e09f27-b306-4b51-8d01-0cee8378abca": {
+      "id": "f9e09f27-b306-4b51-8d01-0cee8378abca",
+      "product_id": "2b5d2e4e-4a15-4263-826a-f866acd65d26",
+      "product_name": "Samsung Galaxy S24 Ultra 512GB",
+      "type": "out",
+      "quantity": 2,
+      "reason": "sale",
+      "reference_id": "5953b72b-81a1-466f-8e01-be5168db6993",
+      "reference_type": "sale",
+      "date": "2025-08-04T20:31:06.397718",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250804-0001"
+    },
+    "07eb005f-6d87-4844-8ce7-05378f140aa0": {
+      "id": "07eb005f-6d87-4844-8ce7-05378f140aa0",
+      "product_id": "2ee30840-b6b5-4cf2-9ce3-cccb0ad1bdcc",
+      "product_name": "iPhone 15 Pro Max 256GB",
+      "type": "out",
+      "quantity": 2,
+      "reason": "sale",
+      "reference_id": "5953b72b-81a1-466f-8e01-be5168db6993",
+      "reference_type": "sale",
+      "date": "2025-08-04T20:31:06.397718",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250804-0001"
+    },
+    "5e035ac6-dd87-45d7-ba46-07185ff0fcfb": {
+      "id": "5e035ac6-dd87-45d7-ba46-07185ff0fcfb",
+      "product_id": "2ee30840-b6b5-4cf2-9ce3-cccb0ad1bdcc",
+      "product_name": "iPhone 15 Pro Max 256GB",
+      "type": "out",
+      "quantity": 2,
+      "reason": "sale",
+      "reference_id": "5cb32fea-2f55-4a10-beb3-f8244003bb00",
+      "reference_type": "sale",
+      "date": "2025-08-04T20:49:30.013381",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250804-0002"
+    },
+    "2172ea5a-490c-4cf7-9ce0-b77599d16ba8": {
+      "id": "2172ea5a-490c-4cf7-9ce0-b77599d16ba8",
+      "product_id": "2b5d2e4e-4a15-4263-826a-f866acd65d26",
+      "product_name": "Samsung Galaxy S24 Ultra 512GB",
+      "type": "out",
+      "quantity": 2,
+      "reason": "sale",
+      "reference_id": "5cb32fea-2f55-4a10-beb3-f8244003bb00",
+      "reference_type": "sale",
+      "date": "2025-08-04T20:49:30.013381",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250804-0002"
+    },
+    "206fe4fd-5f58-493d-9626-0afce5c82eb8": {
+      "id": "206fe4fd-5f58-493d-9626-0afce5c82eb8",
+      "product_id": "b54c0387-bab5-437f-9172-d368cc2191c6",
+      "product_name": "شاحن لاسلكي سريع 15W",
+      "type": "out",
+      "quantity": 2,
+      "reason": "sale",
+      "reference_id": "5cb32fea-2f55-4a10-beb3-f8244003bb00",
+      "reference_type": "sale",
+      "date": "2025-08-04T20:49:30.013381",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250804-0002"
+    },
+    "8da558bb-f062-4e66-b147-22d63c019b95": {
+      "id": "8da558bb-f062-4e66-b147-22d63c019b95",
+      "product_id": "2b5d2e4e-4a15-4263-826a-f866acd65d26",
+      "product_name": "Samsung Galaxy S24 Ultra 512GB",
+      "type": "adjustment",
+      "quantity": 4,
+      "old_quantity": 8,
+      "new_quantity": 12,
+      "reason": "تعديل",
+      "notes": "",
+      "created_at": "2025-08-04T22:02:09.453839",
+      "created_by": "652ed256-db24-499d-ab54-3fed13a0df4f"
+    },
+    "760c733a-55f2-435a-8141-cadbd9605e90": {
+      "id": "760c733a-55f2-435a-8141-cadbd9605e90",
+      "product_id": "2ee30840-b6b5-4cf2-9ce3-cccb0ad1bdcc",
+      "product_name": "iPhone 15 Pro Max 256GB",
+      "type": "addition",
+      "quantity": 10,
+      "old_quantity": 11,
+      "new_quantity": 21,
+      "reason": "تعديل",
+      "notes": "",
+      "created_at": "2025-08-04T22:02:41.581415",
+      "created_by": "652ed256-db24-499d-ab54-3fed13a0df4f"
+    },
+    "2a98990c-1c69-4b73-86dd-165b5c5c190a": {
+      "id": "2a98990c-1c69-4b73-86dd-165b5c5c190a",
+      "product_id": "b54c0387-bab5-437f-9172-d368cc2191c6",
+      "product_name": "شاحن لاسلكي سريع 15W",
+      "type": "out",
+      "quantity": 1,
+      "reason": "sale",
+      "reference_id": "9971ee69-8c47-4c4b-90fe-a563a3f5e2d1",
+      "reference_type": "sale",
+      "date": "2025-08-04T22:42:42.092071",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250804-0003"
+    },
+    "98b3f665-0304-417d-99ec-8e362f5ea146": {
+      "id": "98b3f665-0304-417d-99ec-8e362f5ea146",
+      "product_id": "2b5d2e4e-4a15-4263-826a-f866acd65d26",
+      "product_name": "Samsung Galaxy S24 Ultra 512GB",
+      "type": "out",
+      "quantity": 1,
+      "reason": "sale",
+      "reference_id": "9971ee69-8c47-4c4b-90fe-a563a3f5e2d1",
+      "reference_type": "sale",
+      "date": "2025-08-04T22:42:42.092071",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250804-0003"
+    },
+    "249c1116-7744-4e5e-a47b-dd8043aecf3e": {
+      "id": "249c1116-7744-4e5e-a47b-dd8043aecf3e",
+      "product_id": "2b5d2e4e-4a15-4263-826a-f866acd65d26",
+      "product_name": "Samsung Galaxy S24 Ultra 512GB",
+      "type": "out",
+      "quantity": 2,
+      "reason": "sale",
+      "reference_id": "ba9e6936-9d0f-465f-a4bd-a89f0e176bb4",
+      "reference_type": "sale",
+      "date": "2025-08-04T23:56:55.406994",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250804-0004"
+    },
+    "621244ac-d5de-4d4e-ac20-8929cd00dc9a": {
+      "id": "621244ac-d5de-4d4e-ac20-8929cd00dc9a",
+      "product_id": "2ee30840-b6b5-4cf2-9ce3-cccb0ad1bdcc",
+      "product_name": "iPhone 15 Pro Max 256GB",
+      "type": "out",
+      "quantity": 1,
+      "reason": "sale",
+      "reference_id": "ba9e6936-9d0f-465f-a4bd-a89f0e176bb4",
+      "reference_type": "sale",
+      "date": "2025-08-04T23:56:55.406994",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250804-0004"
+    },
+    "342cd80d-f613-47ad-9d53-eb8106ec12ab": {
+      "id": "342cd80d-f613-47ad-9d53-eb8106ec12ab",
+      "product_id": "b54c0387-bab5-437f-9172-d368cc2191c6",
+      "product_name": "شاحن لاسلكي سريع 15W",
+      "type": "out",
+      "quantity": 1,
+      "reason": "sale",
+      "reference_id": "ba9e6936-9d0f-465f-a4bd-a89f0e176bb4",
+      "reference_type": "sale",
+      "date": "2025-08-04T23:56:55.406994",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250804-0004"
+    },
+    "0286cf7b-0485-45c3-b2a8-4514fd90f2db": {
+      "id": "0286cf7b-0485-45c3-b2a8-4514fd90f2db",
+      "product_id": "b54c0387-bab5-437f-9172-d368cc2191c6",
+      "product_name": "شاحن لاسلكي سريع 15W",
+      "type": "out",
+      "quantity": 1,
+      "reason": "sale",
+      "reference_id": "7f6e6800-6495-404f-9216-8d372d333f62",
+      "reference_type": "sale",
+      "date": "2025-08-05T00:05:07.850298",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250805-0005"
+    },
+    "ff3ae154-01fa-47a9-b920-42f823f3b4eb": {
+      "id": "ff3ae154-01fa-47a9-b920-42f823f3b4eb",
+      "product_id": "2b5d2e4e-4a15-4263-826a-f866acd65d26",
+      "product_name": "Samsung Galaxy S24 Ultra 512GB",
+      "type": "out",
+      "quantity": 1,
+      "reason": "sale",
+      "reference_id": "7f6e6800-6495-404f-9216-8d372d333f62",
+      "reference_type": "sale",
+      "date": "2025-08-05T00:05:07.850298",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250805-0005"
+    },
+    "13e93230-815e-47e2-9c33-a43800c64e85": {
+      "id": "13e93230-815e-47e2-9c33-a43800c64e85",
+      "product_id": "2ee30840-b6b5-4cf2-9ce3-cccb0ad1bdcc",
+      "product_name": "iPhone 15 Pro Max 256GB",
+      "type": "out",
+      "quantity": 1,
+      "reason": "sale",
+      "reference_id": "7f6e6800-6495-404f-9216-8d372d333f62",
+      "reference_type": "sale",
+      "date": "2025-08-05T00:05:07.850298",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250805-0005"
+    },
+    "d61519a8-1f69-45f5-a812-02fb60fd602f": {
+      "id": "d61519a8-1f69-45f5-a812-02fb60fd602f",
+      "product_id": "2ee30840-b6b5-4cf2-9ce3-cccb0ad1bdcc",
+      "product_name": "iPhone 15 Pro Max 256GB",
+      "type": "out",
+      "quantity": 1,
+      "reason": "sale",
+      "reference_id": "74dbff6b-8115-4f1e-b2f3-318c72b9a15f",
+      "reference_type": "sale",
+      "date": "2025-08-05T12:03:44.970926",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250805-0006"
+    },
+    "64114af9-862f-41b3-b06c-c721c40ca96a": {
+      "id": "64114af9-862f-41b3-b06c-c721c40ca96a",
+      "product_id": "2b5d2e4e-4a15-4263-826a-f866acd65d26",
+      "product_name": "Samsung Galaxy S24 Ultra 512GB",
+      "type": "out",
+      "quantity": 1,
+      "reason": "sale",
+      "reference_id": "74dbff6b-8115-4f1e-b2f3-318c72b9a15f",
+      "reference_type": "sale",
+      "date": "2025-08-05T12:03:44.970926",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250805-0006"
+    },
+    "4880e9f3-a866-4296-8766-80aa51fe7a06": {
+      "id": "4880e9f3-a866-4296-8766-80aa51fe7a06",
+      "product_id": "b54c0387-bab5-437f-9172-d368cc2191c6",
+      "product_name": "شاحن لاسلكي سريع 15W",
+      "type": "out",
+      "quantity": 1,
+      "reason": "sale",
+      "reference_id": "74dbff6b-8115-4f1e-b2f3-318c72b9a15f",
+      "reference_type": "sale",
+      "date": "2025-08-05T12:03:44.970926",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250805-0006"
+    },
+    "c9c79371-d9fa-4a17-98bf-b7059fc92fec": {
+      "id": "c9c79371-d9fa-4a17-98bf-b7059fc92fec",
+      "product_id": "b54c0387-bab5-437f-9172-d368cc2191c6",
+      "product_name": "شاحن لاسلكي سريع 15W",
+      "type": "out",
+      "quantity": 1,
+      "reason": "sale",
+      "reference_id": "2ec45bf1-be10-4901-b310-0946b33ccec8",
+      "reference_type": "sale",
+      "date": "2025-08-05T12:04:47.656047",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250805-0007"
+    },
+    "c8efbc7f-fd0a-4a2e-81f4-c67ae106f045": {
+      "id": "c8efbc7f-fd0a-4a2e-81f4-c67ae106f045",
+      "product_id": "2b5d2e4e-4a15-4263-826a-f866acd65d26",
+      "product_name": "Samsung Galaxy S24 Ultra 512GB",
+      "type": "out",
+      "quantity": 1,
+      "reason": "sale",
+      "reference_id": "2ec45bf1-be10-4901-b310-0946b33ccec8",
+      "reference_type": "sale",
+      "date": "2025-08-05T12:04:47.656047",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250805-0007"
+    },
+    "7e6010ab-945d-48cd-8b75-f0ffd23a585b": {
+      "id": "7e6010ab-945d-48cd-8b75-f0ffd23a585b",
+      "product_id": "b54c0387-bab5-437f-9172-d368cc2191c6",
+      "product_name": "شاحن لاسلكي سريع 15W",
+      "type": "out",
+      "quantity": 1,
+      "reason": "sale",
+      "reference_id": "aa6d70b6-3007-450b-980f-26c27938f326",
+      "reference_type": "sale",
+      "date": "2025-08-05T12:18:40.100221",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250805-0008"
+    },
+    "7e917926-b8a7-480c-ad9d-8af1af85f905": {
+      "id": "7e917926-b8a7-480c-ad9d-8af1af85f905",
+      "product_id": "2b5d2e4e-4a15-4263-826a-f866acd65d26",
+      "product_name": "Samsung Galaxy S24 Ultra 512GB",
+      "type": "out",
+      "quantity": 1,
+      "reason": "sale",
+      "reference_id": "aa6d70b6-3007-450b-980f-26c27938f326",
+      "reference_type": "sale",
+      "date": "2025-08-05T12:18:40.100221",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250805-0008"
+    },
+    "096235bd-d137-4e5f-917f-477eee030b03": {
+      "id": "096235bd-d137-4e5f-917f-477eee030b03",
+      "product_id": "2ee30840-b6b5-4cf2-9ce3-cccb0ad1bdcc",
+      "product_name": "iPhone 15 Pro Max 256GB",
+      "type": "out",
+      "quantity": 1,
+      "reason": "sale",
+      "reference_id": "aa6d70b6-3007-450b-980f-26c27938f326",
+      "reference_type": "sale",
+      "date": "2025-08-05T12:18:40.100221",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250805-0008"
+    },
+    "479afb3f-f301-47eb-a4e4-c76e63823e0d": {
+      "id": "479afb3f-f301-47eb-a4e4-c76e63823e0d",
+      "product_id": "b54c0387-bab5-437f-9172-d368cc2191c6",
+      "product_name": "شاحن لاسلكي سريع 15W",
+      "type": "out",
+      "quantity": 1,
+      "reason": "sale",
+      "reference_id": "bf1657fb-dd91-4d9c-aac6-c2b3b2cc6450",
+      "reference_type": "sale",
+      "date": "2025-08-05T12:28:46.087772",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250805-0009"
+    },
+    "892688e4-5d55-401d-a885-d0a6614727f7": {
+      "id": "892688e4-5d55-401d-a885-d0a6614727f7",
+      "product_id": "2b5d2e4e-4a15-4263-826a-f866acd65d26",
+      "product_name": "Samsung Galaxy S24 Ultra 512GB",
+      "type": "out",
+      "quantity": 1,
+      "reason": "sale",
+      "reference_id": "bf1657fb-dd91-4d9c-aac6-c2b3b2cc6450",
+      "reference_type": "sale",
+      "date": "2025-08-05T12:28:46.087772",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250805-0009"
+    },
+    "53189a87-d77f-4e57-880c-fce5fb096fca": {
+      "id": "53189a87-d77f-4e57-880c-fce5fb096fca",
+      "product_id": "2ee30840-b6b5-4cf2-9ce3-cccb0ad1bdcc",
+      "product_name": "iPhone 15 Pro Max 256GB",
+      "type": "out",
+      "quantity": 1,
+      "reason": "sale",
+      "reference_id": "bf1657fb-dd91-4d9c-aac6-c2b3b2cc6450",
+      "reference_type": "sale",
+      "date": "2025-08-05T12:28:46.087772",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250805-0009"
+    },
+    "7add1696-4919-40bc-b452-590e6fca1b05": {
+      "id": "7add1696-4919-40bc-b452-590e6fca1b05",
+      "product_id": "2b5d2e4e-4a15-4263-826a-f866acd65d26",
+      "product_name": "Samsung Galaxy S24 Ultra 512GB",
+      "type": "out",
+      "quantity": 2,
+      "reason": "sale",
+      "reference_id": "35371fdd-6bcf-498e-948e-a27307dfb2d4",
+      "reference_type": "sale",
+      "date": "2025-08-05T12:42:15.382492",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250805-0010"
+    },
+    "b471867c-b486-4e2e-9ef5-ed61c3e0df95": {
+      "id": "b471867c-b486-4e2e-9ef5-ed61c3e0df95",
+      "product_id": "2ee30840-b6b5-4cf2-9ce3-cccb0ad1bdcc",
+      "product_name": "iPhone 15 Pro Max 256GB",
+      "type": "out",
+      "quantity": 2,
+      "reason": "sale",
+      "reference_id": "35371fdd-6bcf-498e-948e-a27307dfb2d4",
+      "reference_type": "sale",
+      "date": "2025-08-05T12:42:15.382492",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250805-0010"
+    },
+    "8550049d-9733-449e-9f13-fcd9ec48c566": {
+      "id": "8550049d-9733-449e-9f13-fcd9ec48c566",
+      "product_id": "b54c0387-bab5-437f-9172-d368cc2191c6",
+      "product_name": "شاحن لاسلكي سريع 15W",
+      "type": "out",
+      "quantity": 1,
+      "reason": "sale",
+      "reference_id": "35371fdd-6bcf-498e-948e-a27307dfb2d4",
+      "reference_type": "sale",
+      "date": "2025-08-05T12:42:15.382492",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250805-0010"
+    },
+    "61decdbf-0ab5-48df-b379-4dd052d74b26": {
+      "id": "61decdbf-0ab5-48df-b379-4dd052d74b26",
+      "product_id": "2ee30840-b6b5-4cf2-9ce3-cccb0ad1bdcc",
+      "product_name": "iPhone 15 Pro Max 256GB",
+      "type": "out",
+      "quantity": 1,
+      "reason": "sale",
+      "reference_id": "8d08cd28-a22b-4176-9bea-bab97dc96868",
+      "reference_type": "sale",
+      "date": "2025-08-05T12:46:11.651699",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250805-0011"
+    },
+    "2d1434f9-2e55-4dcc-8eb1-2cfc2be760af": {
+      "id": "2d1434f9-2e55-4dcc-8eb1-2cfc2be760af",
+      "product_id": "b54c0387-bab5-437f-9172-d368cc2191c6",
+      "product_name": "شاحن لاسلكي سريع 15W",
+      "type": "out",
+      "quantity": 1,
+      "reason": "sale",
+      "reference_id": "8d08cd28-a22b-4176-9bea-bab97dc96868",
+      "reference_type": "sale",
+      "date": "2025-08-05T12:46:11.651699",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250805-0011"
+    },
+    "56f36c56-a496-43de-b790-fe696ab2ba38": {
+      "id": "56f36c56-a496-43de-b790-fe696ab2ba38",
+      "product_id": "2ee30840-b6b5-4cf2-9ce3-cccb0ad1bdcc",
+      "product_name": "iPhone 15 Pro Max 256GB",
+      "type": "out",
+      "quantity": 1,
+      "reason": "sale",
+      "reference_id": "5364a600-e5db-4c8a-bc35-7b7541956302",
+      "reference_type": "sale",
+      "date": "2025-08-05T13:01:59.445701",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250805-0012"
+    },
+    "0ab268d2-8304-4d40-a763-d87c8e2959a2": {
+      "id": "0ab268d2-8304-4d40-a763-d87c8e2959a2",
+      "product_id": "b54c0387-bab5-437f-9172-d368cc2191c6",
+      "product_name": "شاحن لاسلكي سريع 15W",
+      "type": "out",
+      "quantity": 1,
+      "reason": "sale",
+      "reference_id": "a52625b2-c1eb-4541-8d8c-0ad0162e04d7",
+      "reference_type": "sale",
+      "date": "2025-08-05T13:05:38.819195",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250805-0013"
+    },
+    "8726bacc-941f-45d9-9d0b-083ad0a0d5e5": {
+      "id": "8726bacc-941f-45d9-9d0b-083ad0a0d5e5",
+      "product_id": "2ee30840-b6b5-4cf2-9ce3-cccb0ad1bdcc",
+      "product_name": "iPhone 15 Pro Max 256GB",
+      "type": "out",
+      "quantity": 1,
+      "reason": "sale",
+      "reference_id": "f764dba1-709f-4d54-a321-ef42064831e4",
+      "reference_type": "sale",
+      "date": "2025-08-05T13:28:18.112366",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250805-0014"
+    },
+    "89b4c012-218b-46ca-bba4-9ba10e4e1113": {
+      "id": "89b4c012-218b-46ca-bba4-9ba10e4e1113",
+      "product_id": "2b5d2e4e-4a15-4263-826a-f866acd65d26",
+      "product_name": "Samsung Galaxy S24 Ultra 512GB",
+      "type": "out",
+      "quantity": 1,
+      "reason": "sale",
+      "reference_id": "f764dba1-709f-4d54-a321-ef42064831e4",
+      "reference_type": "sale",
+      "date": "2025-08-05T13:28:18.112366",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250805-0014"
+    },
+    "c47b9331-b6c2-4ffa-88b8-7e9aa7e4f4a8": {
+      "id": "c47b9331-b6c2-4ffa-88b8-7e9aa7e4f4a8",
+      "product_id": "b54c0387-bab5-437f-9172-d368cc2191c6",
+      "product_name": "شاحن لاسلكي سريع 15W",
+      "type": "out",
+      "quantity": 1,
+      "reason": "sale",
+      "reference_id": "f764dba1-709f-4d54-a321-ef42064831e4",
+      "reference_type": "sale",
+      "date": "2025-08-05T13:28:18.112366",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250805-0014"
+    },
+    "67155203-32ec-4523-b435-9774eb8567db": {
+      "id": "67155203-32ec-4523-b435-9774eb8567db",
+      "product_id": "b54c0387-bab5-437f-9172-d368cc2191c6",
+      "product_name": "شاحن لاسلكي سريع 15W",
+      "type": "out",
+      "quantity": 1,
+      "reason": "sale",
+      "reference_id": "f87dc3c4-c529-47bb-9b5c-eea4d11f6b93",
+      "reference_type": "sale",
+      "date": "2025-08-05T13:30:14.064504",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250805-0015"
+    },
+    "ce0d7129-02cd-4c7d-9ab2-d93670224f75": {
+      "id": "ce0d7129-02cd-4c7d-9ab2-d93670224f75",
+      "product_id": "2b5d2e4e-4a15-4263-826a-f866acd65d26",
+      "product_name": "Samsung Galaxy S24 Ultra 512GB",
+      "type": "out",
+      "quantity": 1,
+      "reason": "sale",
+      "reference_id": "f87dc3c4-c529-47bb-9b5c-eea4d11f6b93",
+      "reference_type": "sale",
+      "date": "2025-08-05T13:30:14.064504",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250805-0015"
+    },
+    "061ec659-0c02-4d9d-9111-bd0d8a472cf6": {
+      "id": "061ec659-0c02-4d9d-9111-bd0d8a472cf6",
+      "product_id": "2ee30840-b6b5-4cf2-9ce3-cccb0ad1bdcc",
+      "product_name": "iPhone 15 Pro Max 256GB",
+      "type": "out",
+      "quantity": 1,
+      "reason": "sale",
+      "reference_id": "f87dc3c4-c529-47bb-9b5c-eea4d11f6b93",
+      "reference_type": "sale",
+      "date": "2025-08-05T13:30:14.064504",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250805-0015"
+    },
+    "c589d721-3b1b-4923-93ac-06242b536ef1": {
+      "id": "c589d721-3b1b-4923-93ac-06242b536ef1",
+      "product_id": "b54c0387-bab5-437f-9172-d368cc2191c6",
+      "product_name": "شاحن لاسلكي سريع 15W",
+      "type": "out",
+      "quantity": 1,
+      "reason": "sale",
+      "reference_id": "2d718014-65ec-4d14-931b-e79025195696",
+      "reference_type": "sale",
+      "date": "2025-08-05T13:41:50.214396",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250805-0016"
+    },
+    "88751e61-959b-433a-acc1-27ee572c7907": {
+      "id": "88751e61-959b-433a-acc1-27ee572c7907",
+      "product_id": "2b5d2e4e-4a15-4263-826a-f866acd65d26",
+      "product_name": "Samsung Galaxy S24 Ultra 512GB",
+      "type": "out",
+      "quantity": 1,
+      "reason": "sale",
+      "reference_id": "2d718014-65ec-4d14-931b-e79025195696",
+      "reference_type": "sale",
+      "date": "2025-08-05T13:41:50.214396",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250805-0016"
+    },
+    "26ce57b0-e267-4050-a3bb-e136d0b9e6c9": {
+      "id": "26ce57b0-e267-4050-a3bb-e136d0b9e6c9",
+      "product_id": "2ee30840-b6b5-4cf2-9ce3-cccb0ad1bdcc",
+      "product_name": "iPhone 15 Pro Max 256GB",
+      "type": "out",
+      "quantity": 1,
+      "reason": "sale",
+      "reference_id": "2d718014-65ec-4d14-931b-e79025195696",
+      "reference_type": "sale",
+      "date": "2025-08-05T13:41:50.214396",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "notes": "بيع - فاتورة رقم INV-20250805-0016"
+    }
+  },
+  "partners": {},
+  "balance_history": [],
+  "activity_log": [
+    {
+      "id": "51fe6d95-ac90-4f1c-b650-7e477ad95451",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "action": "login",
+      "details": {
+        "username": "admin",
+        "ip": "127.0.0.1"
+      },
+      "timestamp": "2025-08-04T19:34:15.128434",
+      "ip_address": "127.0.0.1"
+    },
+    {
+      "id": "67a74134-9014-4cc6-ad73-5942bc1ab8b3",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "action": "login",
+      "details": {
+        "username": "admin",
+        "ip": "127.0.0.1"
+      },
+      "timestamp": "2025-08-04T20:30:27.241241",
+      "ip_address": "127.0.0.1"
+    },
+    {
+      "id": "86c3eec0-7dfc-4876-93c6-b0bfd6fb2d27",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "action": "complete_sale",
+      "details": {
+        "sale_id": "5953b72b-81a1-466f-8e01-be5168db6993",
+        "invoice_number": "INV-20250804-0001",
+        "total_amount": 18572.5,
+        "items_count": 3
+      },
+      "timestamp": "2025-08-04T20:31:06.417271",
+      "ip_address": "127.0.0.1"
+    },
+    {
+      "id": "5081bcba-93c6-447c-8b3b-a0a13f83ef5c",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "action": "login",
+      "details": {
+        "username": "admin",
+        "ip": "127.0.0.1"
+      },
+      "timestamp": "2025-08-04T20:48:32.287199",
+      "ip_address": "127.0.0.1"
+    },
+    {
+      "id": "9045f9b2-2871-44cd-8522-6dd2f7818834",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "action": "complete_sale",
+      "details": {
+        "sale_id": "5cb32fea-2f55-4a10-beb3-f8244003bb00",
+        "invoice_number": "INV-20250804-0002",
+        "total_amount": 0.0,
+        "items_count": 3
+      },
+      "timestamp": "2025-08-04T20:49:30.041831",
+      "ip_address": "127.0.0.1"
+    },
+    {
+      "id": "b066d947-d271-4f53-b2d0-494285a192f0",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "action": "login",
+      "details": {
+        "username": "admin",
+        "ip": "192.168.0.117"
+      },
+      "timestamp": "2025-08-04T21:02:27.212211",
+      "ip_address": "192.168.0.117"
+    },
+    {
+      "id": "21bbb34d-3cfc-4d9a-a861-e7d4b2c24efb",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "action": "login",
+      "details": {
+        "username": "admin",
+        "ip": "192.168.0.117"
+      },
+      "timestamp": "2025-08-04T21:18:57.033992",
+      "ip_address": "192.168.0.117"
+    },
+    {
+      "id": "ec64430f-8696-4105-850a-6165a9cc22a8",
+      "user_id": "unknown",
+      "action": "failed_login",
+      "details": {
+        "username": "admin",
+        "ip": "192.168.0.117"
+      },
+      "timestamp": "2025-08-04T21:29:57.378178",
+      "ip_address": "192.168.0.117"
+    },
+    {
+      "id": "f5c890c8-a426-4d4b-b993-1750186bb959",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "action": "login",
+      "details": {
+        "username": "admin",
+        "ip": "192.168.0.117"
+      },
+      "timestamp": "2025-08-04T21:30:06.666172",
+      "ip_address": "192.168.0.117"
+    },
+    {
+      "id": "0180d7ef-50d8-4bb5-9393-df88d9605a15",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "login",
+      "details": {
+        "username": "admin",
+        "ip": "192.168.0.117"
+      },
+      "timestamp": "2025-08-04T21:58:50.260889",
+      "ip_address": "192.168.0.117",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "bdb36294-8d06-4395-9eae-250c24bbb6ca",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "adjust_stock",
+      "details": {
+        "product_id": "2b5d2e4e-4a15-4263-826a-f866acd65d26",
+        "product_name": "Samsung Galaxy S24 Ultra 512GB",
+        "old_quantity": 8,
+        "new_quantity": 12,
+        "reason": "تعديل"
+      },
+      "timestamp": "2025-08-04T22:02:09.486427",
+      "ip_address": "192.168.0.117",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "a6118193-ac96-49bd-9d30-3cd9f7e60d9c",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "add_stock",
+      "details": {
+        "product_id": "2ee30840-b6b5-4cf2-9ce3-cccb0ad1bdcc",
+        "product_name": "iPhone 15 Pro Max 256GB",
+        "quantity": 10,
+        "reason": "تعديل",
+        "old_quantity": 11,
+        "new_quantity": 21
+      },
+      "timestamp": "2025-08-04T22:02:41.592473",
+      "ip_address": "192.168.0.117",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "41d8318d-f1ca-46af-b5ac-c65c84a85e2a",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "login",
+      "details": {
+        "username": "admin",
+        "ip": "127.0.0.1"
+      },
+      "timestamp": "2025-08-04T22:28:29.756063",
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "a3ff280d-7d0d-4c8a-99ea-503dbd2333ea",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "login",
+      "details": {
+        "username": "admin",
+        "ip": "127.0.0.1"
+      },
+      "timestamp": "2025-08-04T22:39:51.414858",
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "18c15919-21e4-433d-ae35-32bf619d356f",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "complete_sale",
+      "details": {
+        "sale_id": "9971ee69-8c47-4c4b-90fe-a563a3f5e2d1",
+        "invoice_number": "INV-20250804-0003",
+        "total_amount": 0.0,
+        "items_count": 2
+      },
+      "timestamp": "2025-08-04T22:42:42.110910",
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "bb2c4404-e7b3-47e8-992f-fbd33cca7ef8",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "login",
+      "details": {
+        "username": "admin",
+        "ip": "192.168.0.117"
+      },
+      "timestamp": "2025-08-04T22:53:40.794262",
+      "ip_address": "192.168.0.117",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "861094fb-7405-49cb-8b11-9307becef696",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "delete_customer",
+      "details": {
+        "customer_id": "eee969dc-3860-461c-95f1-ebe0b2d1f505",
+        "name": "شركة الاتصالات المتقدمة"
+      },
+      "timestamp": "2025-08-04T22:54:34.178774",
+      "ip_address": "192.168.0.117",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "d4b00ebe-6df8-4770-b773-e27bae63f132",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "add_customer",
+      "details": {
+        "customer_id": "61dff224-aefc-4d8c-ac49-3901a645d693",
+        "name": "امحمد الهرام"
+      },
+      "timestamp": "2025-08-04T22:55:56.450739",
+      "ip_address": "192.168.0.117",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "ef7f7993-9786-42e4-9c1e-f0383e37b851",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "login",
+      "details": {
+        "username": "admin",
+        "ip": "127.0.0.1"
+      },
+      "timestamp": "2025-08-04T23:17:44.665081",
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "1071de24-bcbb-4134-80e5-b9a0f41b9253",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "login",
+      "details": {
+        "username": "admin",
+        "ip": "127.0.0.1"
+      },
+      "timestamp": "2025-08-04T23:23:55.210493",
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "424807ab-ce8c-49f4-955b-7b8c19b3a99c",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "login",
+      "details": {
+        "username": "admin",
+        "ip": "192.168.0.117"
+      },
+      "timestamp": "2025-08-04T23:25:05.706369",
+      "ip_address": "192.168.0.117",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "2898c2d7-aa6b-4b3b-8300-1fd0c5f97649",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "toggle_user_status",
+      "details": {
+        "user_id": "f3394967-3a4b-4fbb-af26-c5fba15a3b7f",
+        "username": "manager",
+        "new_status": false
+      },
+      "timestamp": "2025-08-04T23:25:33.428205",
+      "ip_address": "192.168.0.117",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "252edd28-b94e-4903-a560-fc383a459e87",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "update_settings",
+      "details": {
+        "updated_settings": [
+          "company_name",
+          "company_address",
+          "company_phone",
+          "company_email"
+        ],
+        "updated_count": 4
+      },
+      "timestamp": "2025-08-04T23:26:25.971915",
+      "ip_address": "192.168.0.117",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "99d0b0e2-55f8-48ee-9070-cabacf7184dd",
+      "user_id": "unknown",
+      "user_info": "unknown",
+      "action": "failed_login",
+      "details": {
+        "username": "admin",
+        "ip": "192.168.0.117"
+      },
+      "timestamp": "2025-08-04T23:27:54.148215",
+      "ip_address": "192.168.0.117",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "c1b5da45-9ac3-49f5-ad17-d040e2ef1126",
+      "user_id": "unknown",
+      "user_info": "unknown",
+      "action": "failed_login",
+      "details": {
+        "username": "admin",
+        "ip": "192.168.0.117"
+      },
+      "timestamp": "2025-08-04T23:28:00.745317",
+      "ip_address": "192.168.0.117",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "e1a21914-0c1e-4d29-8067-1381c67e70b6",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "login",
+      "details": {
+        "username": "admin",
+        "ip": "192.168.0.117"
+      },
+      "timestamp": "2025-08-04T23:28:10.728203",
+      "ip_address": "192.168.0.117",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "309373a2-bd2e-4656-af63-5c1aab7b605e",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "login",
+      "details": {
+        "username": "admin",
+        "ip": "192.168.0.117"
+      },
+      "timestamp": "2025-08-04T23:51:33.841989",
+      "ip_address": "192.168.0.117",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "9642609a-e01f-4188-b40b-5d39730c6300",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "login",
+      "details": {
+        "username": "admin",
+        "ip": "192.168.0.117"
+      },
+      "timestamp": "2025-08-04T23:56:43.442341",
+      "ip_address": "192.168.0.117",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "c0662711-b202-4fb5-bcdf-890430f9d5ef",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "complete_sale",
+      "details": {
+        "sale_id": "ba9e6936-9d0f-465f-a4bd-a89f0e176bb4",
+        "invoice_number": "INV-20250804-0004",
+        "total_amount": 0.0,
+        "items_count": 3
+      },
+      "timestamp": "2025-08-04T23:56:55.422683",
+      "ip_address": "192.168.0.117",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "ff278cd5-65fa-411d-bd34-96686c7d75e9",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "login",
+      "details": {
+        "username": "admin",
+        "ip": "192.168.0.117"
+      },
+      "timestamp": "2025-08-05T00:04:35.075948",
+      "ip_address": "192.168.0.117",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "a6a4647d-35fb-4f1b-ac0a-c64dd6f0811a",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "complete_sale",
+      "details": {
+        "sale_id": "7f6e6800-6495-404f-9216-8d372d333f62",
+        "invoice_number": "INV-20250805-0005",
+        "total_amount": 0.0,
+        "items_count": 3
+      },
+      "timestamp": "2025-08-05T00:05:07.884810",
+      "ip_address": "192.168.0.117",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "8b17e64e-235e-47a8-8214-92bebfe3b5fd",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "login",
+      "details": {
+        "username": "admin",
+        "ip": "127.0.0.1"
+      },
+      "timestamp": "2025-08-05T00:07:27.604677",
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "6c621a68-e408-4a43-a932-d02e86c15456",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "login",
+      "details": {
+        "username": "admin",
+        "ip": "127.0.0.1"
+      },
+      "timestamp": "2025-08-05T00:15:46.860635",
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "688e80b3-7e49-4964-8a95-73ad1650d3e3",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "login",
+      "details": {
+        "username": "admin",
+        "ip": "127.0.0.1"
+      },
+      "timestamp": "2025-08-05T12:03:21.291173",
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "9ec5520b-5d99-47b7-9f15-a6eeb07f914b",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "complete_sale",
+      "details": {
+        "sale_id": "74dbff6b-8115-4f1e-b2f3-318c72b9a15f",
+        "invoice_number": "INV-20250805-0006",
+        "total_amount": 9286.25,
+        "items_count": 3
+      },
+      "timestamp": "2025-08-05T12:03:44.985837",
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "fc3de5f4-989d-45e6-9e30-a76e77c8646c",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "complete_sale",
+      "details": {
+        "sale_id": "2ec45bf1-be10-4901-b310-0946b33ccec8",
+        "invoice_number": "INV-20250805-0007",
+        "total_amount": 4456.25,
+        "items_count": 2
+      },
+      "timestamp": "2025-08-05T12:04:47.669732",
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "f23d4cdc-c296-4a1a-9eea-94461338c9dd",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "login",
+      "details": {
+        "username": "admin",
+        "ip": "127.0.0.1"
+      },
+      "timestamp": "2025-08-05T12:18:12.022685",
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "77489fd0-427e-4120-9090-6efd3c0cf20b",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "complete_sale",
+      "details": {
+        "sale_id": "aa6d70b6-3007-450b-980f-26c27938f326",
+        "invoice_number": "INV-20250805-0008",
+        "total_amount": 9286.25,
+        "items_count": 3
+      },
+      "timestamp": "2025-08-05T12:18:40.115956",
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "a458f87b-af36-470e-abf7-982dceab6261",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "login",
+      "details": {
+        "username": "admin",
+        "ip": "127.0.0.1"
+      },
+      "timestamp": "2025-08-05T12:28:31.023565",
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "1d23368a-ab30-47d7-ae1c-8972d74eb32f",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "complete_sale",
+      "details": {
+        "sale_id": "bf1657fb-dd91-4d9c-aac6-c2b3b2cc6450",
+        "invoice_number": "INV-20250805-0009",
+        "total_amount": 9286.25,
+        "items_count": 3
+      },
+      "timestamp": "2025-08-05T12:28:46.102960",
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "bb8ff4bc-90cd-4570-9783-e49d106006e5",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "login",
+      "details": {
+        "username": "admin",
+        "ip": "127.0.0.1"
+      },
+      "timestamp": "2025-08-05T12:42:00.841321",
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "75b429e7-16ec-451d-9eb3-c6bbcb67fefa",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "complete_sale",
+      "details": {
+        "sale_id": "35371fdd-6bcf-498e-948e-a27307dfb2d4",
+        "invoice_number": "INV-20250805-0010",
+        "total_amount": 18486.25,
+        "items_count": 3
+      },
+      "timestamp": "2025-08-05T12:42:15.398171",
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "89dde94a-2d20-4abe-9f66-4416497aab22",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "login",
+      "details": {
+        "username": "admin",
+        "ip": "127.0.0.1"
+      },
+      "timestamp": "2025-08-05T12:45:59.208556",
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "9e715f15-32ff-4e4c-ab03-b2e5cbd99304",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "complete_sale",
+      "details": {
+        "sale_id": "8d08cd28-a22b-4176-9bea-bab97dc96868",
+        "invoice_number": "INV-20250805-0011",
+        "total_amount": 4916.25,
+        "items_count": 2
+      },
+      "timestamp": "2025-08-05T12:46:11.667104",
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "1804c1dc-6878-4675-8b62-849171b2a4bf",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "login",
+      "details": {
+        "username": "admin",
+        "ip": "127.0.0.1"
+      },
+      "timestamp": "2025-08-05T13:01:50.564834",
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "93180c33-6b52-4145-a667-fd02b03e60df",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "complete_sale",
+      "details": {
+        "sale_id": "5364a600-e5db-4c8a-bc35-7b7541956302",
+        "invoice_number": "INV-20250805-0012",
+        "total_amount": 4830.0,
+        "items_count": 1
+      },
+      "timestamp": "2025-08-05T13:01:59.461388",
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "0c3fc489-8478-4d6f-8ad3-850da3b3c880",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "update_product",
+      "details": {
+        "product_id": "2b5d2e4e-4a15-4263-826a-f866acd65d26",
+        "name": "Samsung Galaxy S24 Ultra 512GB"
+      },
+      "timestamp": "2025-08-05T13:04:17.571279",
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "a2181f3e-f576-440b-b6cf-3837c36eac36",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "complete_sale",
+      "details": {
+        "sale_id": "a52625b2-c1eb-4541-8d8c-0ad0162e04d7",
+        "invoice_number": "INV-20250805-0013",
+        "total_amount": 86.25,
+        "items_count": 1
+      },
+      "timestamp": "2025-08-05T13:05:38.837645",
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "efbad0d2-c2db-4acb-8b3e-fdca955c9c28",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "update_settings",
+      "details": {
+        "updated_settings": [
+          "currency",
+          "tax_rate",
+          "exchange_rate",
+          "low_stock_threshold"
+        ],
+        "updated_count": 4
+      },
+      "timestamp": "2025-08-05T13:12:50.162473",
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "e88235e8-7f7b-4ec3-9d13-9c8885551bd3",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "complete_sale",
+      "details": {
+        "sale_id": "f764dba1-709f-4d54-a321-ef42064831e4",
+        "invoice_number": "INV-20250805-0014",
+        "total_amount": 8075.0,
+        "items_count": 3
+      },
+      "timestamp": "2025-08-05T13:28:18.130785",
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    },
+    {
+      "id": "888ef9aa-f161-4e4e-94fc-006099ffa5db",
+      "user_id": "652ed256-db24-499d-ab54-3fed13a0df4f",
+      "user_info": "admin (admin)",
+      "action": "complete_sale",
+      "details": {
+        "sale_id": "f87dc3c4-c529-47bb-9b5c-eea4d11f6b93",
+        "invoice_number": "INV-20250805-0015",
+        "total_amount": 8075.0,
+        "items_count": 3
+      },
+      "timestamp": "2025-08-05T13:30:14.082729",
+      "ip_address": "127.0.0.1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+    }
+  ],
+  "settings": {
+    "company_name": "التميز للهاتف النقال وقطع الغيار",
+    "company_name_en": "Excellence Mobile & Spare Parts",
+    "version": "6.0 Ultimate Professional Enterprise Edition",
+    "currency": "ريال",
+    "currency_symbol": "ر.س",
+    "tax_rate": 0.0,
+    "low_stock_threshold": 5,
+    "critical_stock_threshold": 2,
+    "exchange_rate": 3.75,
+    "auto_barcode": true,
+    "auto_price_update": true,
+    "backup_enabled": true,
+    "backup_interval": 24,
+    "session_timeout": 120,
+    "max_users": 10,
+    "company_phone": "0911410201",
+    "company_email": "info@excellence-mobile.com",
+    "company_address": "درنة, ليبيا",
+    "invoice_format": "A4",
+    "printer_type": "normal",
+    "default_payment_terms": "نقدي",
+    "default_discount": 0,
+    "business_type": "mobile_electronics",
+    "working_hours": "السبت - الخميس: 9:00 ص - 11:00 م",
+    "cr_number": "1010123456",
+    "vat_number": "300123456789003"
+  },
+  "reports_cache": {}
+}
