@@ -1931,6 +1931,380 @@ def get_movement_reason_name(reason):
     }
     return reason_names.get(reason, reason)
 
+@app.route('/api/reports/profit-calculation')
+@require_permission('reports')
+def get_profit_calculation_report():
+    """تقرير حساب الأرباح المفصل - للمدير فقط"""
+    try:
+        current_user = get_current_user()
+        if not current_user or current_user.get('role') != 'admin':
+            if not check_detailed_permission(session['user_id'], 'reports_profit'):
+                return jsonify({'success': False, 'message': 'هذا التقرير متاح للمدير فقط'})
+        
+        data = load_database()
+        sales = data.get('sales', {})
+        products = data.get('products', {})
+        
+        # فلاتر التقرير
+        start_date = request.args.get('start_date')
+        end_date = request.args.get('end_date')
+        product_id = request.args.get('product_id')
+        category = request.args.get('category')
+        
+        # تحليل الأرباح
+        profit_data = []
+        total_revenue = 0
+        total_cost = 0
+        total_profit = 0
+        total_returns = 0
+        
+        for sale_id, sale in sales.items():
+            # فلترة التاريخ
+            sale_date = sale.get('date', '')[:10]
+            if start_date and sale_date < start_date:
+                continue
+            if end_date and sale_date > end_date:
+                continue
+            
+            sale_revenue = 0
+            sale_cost = 0
+            sale_profit = 0
+            sale_items = []
+            
+            for item in sale.get('items', []):
+                item_product_id = item.get('product_id')
+                
+                # فلترة المنتج
+                if product_id and item_product_id != product_id:
+                    continue
+                
+                # فلترة الفئة
+                product = products.get(item_product_id, {})
+                if category and product.get('category') != category:
+                    continue
+                
+                # حساب الأرباح
+                quantity = item.get('quantity', 0)
+                return_quantity = item.get('return_quantity', 0)
+                effective_quantity = quantity - return_quantity
+                
+                selling_price = item.get('price', 0)
+                cost_price = product.get('cost_price', 0)
+                
+                item_revenue = effective_quantity * selling_price
+                item_cost = effective_quantity * cost_price
+                item_profit = item_revenue - item_cost
+                item_returns = return_quantity * selling_price
+                
+                sale_revenue += item_revenue
+                sale_cost += item_cost
+                sale_profit += item_profit
+                
+                total_returns += item_returns
+                
+                sale_items.append({
+                    'product_id': item_product_id,
+                    'product_name': product.get('name', item.get('name', '')),
+                    'product_sku': product.get('sku', ''),
+                    'category': product.get('category', ''),
+                    'quantity': quantity,
+                    'return_quantity': return_quantity,
+                    'effective_quantity': effective_quantity,
+                    'selling_price': selling_price,
+                    'cost_price': cost_price,
+                    'revenue': item_revenue,
+                    'cost': item_cost,
+                    'profit': item_profit,
+                    'profit_margin': (item_profit / item_revenue * 100) if item_revenue > 0 else 0,
+                    'returns_value': item_returns
+                })
+            
+            if sale_items:  # إضافة البيع إذا كان يحتوي على منتجات مطابقة للفلاتر
+                # خصم المردودات من إجمالي البيع
+                sale_returns_amount = sale.get('returns_amount', 0)
+                sale_profit -= sale_returns_amount
+                
+                profit_data.append({
+                    'sale_id': sale_id,
+                    'invoice_number': sale.get('invoice_number'),
+                    'date': sale.get('date'),
+                    'customer_name': sale.get('customer_name', 'عميل عادي'),
+                    'payment_method': sale.get('payment_method'),
+                    'revenue': sale_revenue,
+                    'cost': sale_cost,
+                    'profit': sale_profit,
+                    'profit_margin': (sale_profit / sale_revenue * 100) if sale_revenue > 0 else 0,
+                    'discount_amount': sale.get('discount_amount', 0),
+                    'tax_amount': sale.get('tax_amount', 0),
+                    'returns_amount': sale_returns_amount,
+                    'items': sale_items,
+                    'items_count': len(sale_items)
+                })
+                
+                total_revenue += sale_revenue
+                total_cost += sale_cost
+                total_profit += sale_profit
+        
+        # ترتيب حسب التاريخ
+        profit_data.sort(key=lambda x: x['date'], reverse=True)
+        
+        # تجميع حسب المنتج
+        product_profits = {}
+        for sale in profit_data:
+            for item in sale['items']:
+                product_id = item['product_id']
+                if product_id not in product_profits:
+                    product_profits[product_id] = {
+                        'product_name': item['product_name'],
+                        'product_sku': item['product_sku'],
+                        'category': item['category'],
+                        'total_quantity': 0,
+                        'total_revenue': 0,
+                        'total_cost': 0,
+                        'total_profit': 0,
+                        'total_returns': 0,
+                        'sales_count': 0
+                    }
+                
+                product_profit = product_profits[product_id]
+                product_profit['total_quantity'] += item['effective_quantity']
+                product_profit['total_revenue'] += item['revenue']
+                product_profit['total_cost'] += item['cost']
+                product_profit['total_profit'] += item['profit']
+                product_profit['total_returns'] += item['returns_value']
+                product_profit['sales_count'] += 1
+        
+        # حساب الهوامش
+        for product_id, product_profit in product_profits.items():
+            if product_profit['total_revenue'] > 0:
+                product_profit['profit_margin'] = (product_profit['total_profit'] / product_profit['total_revenue']) * 100
+            else:
+                product_profit['profit_margin'] = 0
+        
+        # تجميع حسب الفئة
+        category_profits = {}
+        for product_profit in product_profits.values():
+            category = product_profit['category']
+            if category not in category_profits:
+                category_profits[category] = {
+                    'category': category,
+                    'total_revenue': 0,
+                    'total_cost': 0,
+                    'total_profit': 0,
+                    'products_count': 0
+                }
+            
+            cat_profit = category_profits[category]
+            cat_profit['total_revenue'] += product_profit['total_revenue']
+            cat_profit['total_cost'] += product_profit['total_cost']
+            cat_profit['total_profit'] += product_profit['total_profit']
+            cat_profit['products_count'] += 1
+        
+        # حساب الهوامش للفئات
+        for category_profit in category_profits.values():
+            if category_profit['total_revenue'] > 0:
+                category_profit['profit_margin'] = (category_profit['total_profit'] / category_profit['total_revenue']) * 100
+            else:
+                category_profit['profit_margin'] = 0
+        
+        summary = {
+            'total_sales': len(profit_data),
+            'total_revenue': total_revenue,
+            'total_cost': total_cost,
+            'total_profit': total_profit,
+            'total_returns': total_returns,
+            'net_profit': total_profit - total_returns,
+            'average_profit_margin': (total_profit / total_revenue * 100) if total_revenue > 0 else 0,
+            'products_sold': len(product_profits),
+            'categories_involved': len(category_profits),
+            'date_range': {
+                'start': start_date,
+                'end': end_date
+            }
+        }
+        
+        return jsonify({
+            'success': True,
+            'sales': profit_data,
+            'summary': summary,
+            'product_profits': list(product_profits.values()),
+            'category_profits': list(category_profits.values())
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})
+
+@app.route('/api/products/price-list')
+@require_permission('products')
+def get_products_price_list():
+    """قائمة أسعار المنتجات (جملة/تجزئة/تكلفة)"""
+    try:
+        if not check_detailed_permission(session['user_id'], 'products_prices'):
+            return jsonify({'success': False, 'message': 'ليس لديك صلاحية لعرض قائمة الأسعار'})
+        
+        data = load_database()
+        products = data.get('products', {})
+        
+        # فلاتر القائمة
+        category = request.args.get('category')
+        price_type = request.args.get('price_type', 'all')  # retail, wholesale, cost, all
+        min_price = request.args.get('min_price', type=float)
+        max_price = request.args.get('max_price', type=float)
+        in_stock_only = request.args.get('in_stock_only', 'false').lower() == 'true'
+        
+        price_list = []
+        
+        for product_id, product in products.items():
+            if not product.get('is_active', True):
+                continue
+            
+            # فلترة الفئة
+            if category and product.get('category') != category:
+                continue
+            
+            # فلترة المخزون
+            if in_stock_only and product.get('stock_quantity', 0) <= 0:
+                continue
+            
+            # تحضير بيانات الأسعار
+            prices = {
+                'retail': product.get('selling_price', 0),
+                'wholesale': product.get('wholesale_price', 0),
+                'cost': product.get('cost_price', 0),
+                'purchase': product.get('purchase_price', 0)
+            }
+            
+            # فلترة نوع السعر
+            if price_type != 'all':
+                target_price = prices.get(price_type, 0)
+                if min_price and target_price < min_price:
+                    continue
+                if max_price and target_price > max_price:
+                    continue
+            
+            # حساب الهوامش
+            cost_price = prices['cost']
+            retail_price = prices['retail']
+            wholesale_price = prices['wholesale']
+            
+            retail_margin = ((retail_price - cost_price) / retail_price * 100) if retail_price > 0 else 0
+            wholesale_margin = ((wholesale_price - cost_price) / wholesale_price * 100) if wholesale_price > 0 else 0
+            
+            price_info = {
+                'product_id': product_id,
+                'name': product.get('name'),
+                'sku': product.get('sku'),
+                'barcode': product.get('barcode'),
+                'category': product.get('category'),
+                'subcategory': product.get('subcategory'),
+                'stock_quantity': product.get('stock_quantity', 0),
+                'unit': product.get('unit', 'قطعة'),
+                'prices': prices,
+                'margins': {
+                    'retail_margin': retail_margin,
+                    'wholesale_margin': wholesale_margin
+                },
+                'price_differences': {
+                    'retail_vs_wholesale': retail_price - wholesale_price,
+                    'wholesale_vs_cost': wholesale_price - cost_price,
+                    'retail_vs_cost': retail_price - cost_price
+                },
+                'last_updated': product.get('updated_at', product.get('created_at')),
+                'supplier': product.get('supplier_id', '')
+            }
+            
+            price_list.append(price_info)
+        
+        # ترتيب القائمة
+        sort_by = request.args.get('sort_by', 'name')  # name, retail_price, wholesale_price, cost_price, margin
+        sort_order = request.args.get('sort_order', 'asc')  # asc, desc
+        
+        if sort_by == 'name':
+            price_list.sort(key=lambda x: x['name'], reverse=(sort_order == 'desc'))
+        elif sort_by in ['retail_price', 'wholesale_price', 'cost_price']:
+            price_key = sort_by.replace('_price', '')
+            price_list.sort(key=lambda x: x['prices'][price_key], reverse=(sort_order == 'desc'))
+        elif sort_by == 'retail_margin':
+            price_list.sort(key=lambda x: x['margins']['retail_margin'], reverse=(sort_order == 'desc'))
+        elif sort_by == 'wholesale_margin':
+            price_list.sort(key=lambda x: x['margins']['wholesale_margin'], reverse=(sort_order == 'desc'))
+        elif sort_by == 'stock':
+            price_list.sort(key=lambda x: x['stock_quantity'], reverse=(sort_order == 'desc'))
+        
+        # إحصائيات عامة
+        if price_list:
+            avg_retail_margin = sum(p['margins']['retail_margin'] for p in price_list) / len(price_list)
+            avg_wholesale_margin = sum(p['margins']['wholesale_margin'] for p in price_list) / len(price_list)
+            
+            total_retail_value = sum(p['prices']['retail'] * p['stock_quantity'] for p in price_list)
+            total_wholesale_value = sum(p['prices']['wholesale'] * p['stock_quantity'] for p in price_list)
+            total_cost_value = sum(p['prices']['cost'] * p['stock_quantity'] for p in price_list)
+        else:
+            avg_retail_margin = 0
+            avg_wholesale_margin = 0
+            total_retail_value = 0
+            total_wholesale_value = 0
+            total_cost_value = 0
+        
+        # تجميع حسب الفئة
+        category_summary = {}
+        for product in price_list:
+            cat = product['category']
+            if cat not in category_summary:
+                category_summary[cat] = {
+                    'category': cat,
+                    'products_count': 0,
+                    'avg_retail_price': 0,
+                    'avg_wholesale_price': 0,
+                    'avg_cost_price': 0,
+                    'avg_retail_margin': 0,
+                    'total_stock_value': 0
+                }
+            
+            cat_summary = category_summary[cat]
+            cat_summary['products_count'] += 1
+            cat_summary['total_stock_value'] += product['prices']['retail'] * product['stock_quantity']
+        
+        # حساب المتوسطات للفئات
+        for cat_summary in category_summary.values():
+            cat_products = [p for p in price_list if p['category'] == cat_summary['category']]
+            if cat_products:
+                cat_summary['avg_retail_price'] = sum(p['prices']['retail'] for p in cat_products) / len(cat_products)
+                cat_summary['avg_wholesale_price'] = sum(p['prices']['wholesale'] for p in cat_products) / len(cat_products)
+                cat_summary['avg_cost_price'] = sum(p['prices']['cost'] for p in cat_products) / len(cat_products)
+                cat_summary['avg_retail_margin'] = sum(p['margins']['retail_margin'] for p in cat_products) / len(cat_products)
+        
+        summary = {
+            'total_products': len(price_list),
+            'avg_retail_margin': avg_retail_margin,
+            'avg_wholesale_margin': avg_wholesale_margin,
+            'total_retail_value': total_retail_value,
+            'total_wholesale_value': total_wholesale_value,
+            'total_cost_value': total_cost_value,
+            'potential_retail_profit': total_retail_value - total_cost_value,
+            'potential_wholesale_profit': total_wholesale_value - total_cost_value,
+            'categories_count': len(category_summary)
+        }
+        
+        return jsonify({
+            'success': True,
+            'price_list': price_list,
+            'summary': summary,
+            'category_summary': list(category_summary.values()),
+            'filters_applied': {
+                'category': category,
+                'price_type': price_type,
+                'min_price': min_price,
+                'max_price': max_price,
+                'in_stock_only': in_stock_only,
+                'sort_by': sort_by,
+                'sort_order': sort_order
+            }
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})
+
 # ===== إدارة المنتجات =====
 
 @app.route('/products')
