@@ -1301,6 +1301,112 @@ def complete_sale():
 
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)})
+
+@app.route('/api/customers/statement/<customer_id>')
+@require_permission('customers')
+def get_customer_statement(customer_id):
+    """كشف حساب مفصل للعميل"""
+    try:
+        data = load_database()
+        customers = data.get('customers', {})
+        sales = data.get('sales', {})
+        balance_history = data.get('balance_history', {})
+        returns_data = data.get('returns', {})
+        
+        if customer_id not in customers:
+            return jsonify({'success': False, 'message': 'العميل غير موجود'})
+        
+        customer = customers[customer_id]
+        
+        # جمع جميع المعاملات
+        transactions = []
+        
+        # إضافة المبيعات
+        for sale_id, sale in sales.items():
+            if sale.get('customer_id') == customer_id:
+                transactions.append({
+                    'date': sale.get('date'),
+                    'type': 'sale',
+                    'type_name': 'بيع',
+                    'reference': sale.get('invoice_number'),
+                    'debit': sale.get('total_amount', 0) if sale.get('payment_method') == 'آجل' else 0,
+                    'credit': 0,
+                    'description': f"فاتورة بيع رقم {sale.get('invoice_number')}",
+                    'payment_method': sale.get('payment_method'),
+                    'items_count': len(sale.get('items', [])),
+                    'returns_amount': sale.get('returns_amount', 0)
+                })
+        
+        # إضافة تاريخ الرصيد
+        for history_id, history in balance_history.items():
+            if history.get('customer_id') == customer_id:
+                amount = history.get('amount', 0)
+                transactions.append({
+                    'date': history.get('date'),
+                    'type': history.get('type'),
+                    'type_name': get_transaction_type_name(history.get('type')),
+                    'reference': history.get('reference', ''),
+                    'debit': amount if amount > 0 else 0,
+                    'credit': abs(amount) if amount < 0 else 0,
+                    'description': history.get('description', ''),
+                    'payment_method': '',
+                    'items_count': 0,
+                    'returns_amount': 0
+                })
+        
+        # ترتيب المعاملات حسب التاريخ
+        transactions.sort(key=lambda x: x['date'], reverse=True)
+        
+        # حساب الرصيد الجاري
+        running_balance = 0
+        for transaction in reversed(transactions):
+            running_balance += transaction['debit'] - transaction['credit']
+            transaction['running_balance'] = running_balance
+        
+        # حساب الإحصائيات
+        total_sales = sum(t['debit'] for t in transactions if t['type'] == 'sale')
+        total_payments = sum(t['credit'] for t in transactions if t['type'] in ['payment', 'cash_payment'])
+        total_returns = sum(t['credit'] for t in transactions if t['type'] == 'return')
+        current_balance = customer.get('current_balance', 0)
+        
+        summary = {
+            'customer_name': customer.get('name'),
+            'customer_phone': customer.get('phone'),
+            'customer_email': customer.get('email', ''),
+            'total_sales': total_sales,
+            'total_payments': total_payments,
+            'total_returns': total_returns,
+            'current_balance': current_balance,
+            'credit_limit': customer.get('credit_limit', 0),
+            'available_credit': customer.get('credit_limit', 0) - current_balance,
+            'transactions_count': len(transactions),
+            'first_transaction_date': transactions[-1]['date'] if transactions else None,
+            'last_transaction_date': transactions[0]['date'] if transactions else None
+        }
+        
+        return jsonify({
+            'success': True,
+            'customer': customer,
+            'transactions': transactions,
+            'summary': summary
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})
+
+def get_transaction_type_name(transaction_type):
+    """ترجمة نوع المعاملة"""
+    type_names = {
+        'payment': 'دفعة',
+        'cash_payment': 'دفع نقدي',
+        'credit_adjustment': 'تعديل ائتماني',
+        'return_credit': 'خصم مردود',
+        'return_cash': 'مردود نقدي',
+        'post_sale_return': 'مردود بعد البيع',
+        'opening_balance': 'رصيد افتتاحي'
+    }
+    return type_names.get(transaction_type, transaction_type)
+
 # ===== إدارة المنتجات =====
 
 @app.route('/products')
@@ -3439,45 +3545,147 @@ def get_sales_report():
 @app.route('/api/reports/inventory-movement', methods=['GET'])
 @require_permission('inventory')
 def get_inventory_movement_report():
-    """تقرير حركة المخزون"""
+    """تقرير حركة المخزون المفصل"""
     try:
+        # التحقق من الصلاحيات المفصلة
+        current_user = get_current_user()
+        if current_user and current_user.get('role') != 'admin':
+            if not check_detailed_permission(session['user_id'], 'reports_inventory'):
+                return jsonify({'success': False, 'message': 'ليس لديك صلاحية لعرض تقارير المخزون'})
+        
         data = load_database()
-        movements = data.get('inventory_movements', {})
-
-        # فلترة حسب التاريخ والمنتج
+        inventory_movements = data.get('inventory_movements', {})
+        products = data.get('products', {})
+        
+        # فلاتر التقرير المحدثة
         start_date = request.args.get('start_date')
         end_date = request.args.get('end_date')
         product_id = request.args.get('product_id')
-        movement_type = request.args.get('type')  # in, out
-
+        movement_type = request.args.get('movement_type')  # in, out, adjustment
+        reason = request.args.get('reason')
+        
         filtered_movements = []
-        for movement in movements.values():
-            movement_date = movement.get('date', '')[:10]
-
+        
+        for movement_id, movement in inventory_movements.items():
             # فلترة التاريخ
-            if start_date and movement_date < start_date:
+            if start_date and movement.get('date', '')[:10] < start_date:
                 continue
-            if end_date and movement_date > end_date:
+            if end_date and movement.get('date', '')[:10] > end_date:
                 continue
-
+            
             # فلترة المنتج
             if product_id and movement.get('product_id') != product_id:
                 continue
-
+            
             # فلترة نوع الحركة
             if movement_type and movement.get('type') != movement_type:
                 continue
-
-            filtered_movements.append(movement)
-
+            
+            # فلترة السبب
+            if reason and movement.get('reason') != reason:
+                continue
+            
+            # إضافة تفاصيل المنتج
+            movement_with_details = movement.copy()
+            product = products.get(movement.get('product_id'), {})
+            movement_with_details.update({
+                'product_name': product.get('name', movement.get('product_name', '')),
+                'product_sku': product.get('sku', ''),
+                'product_category': product.get('category', ''),
+                'current_stock': product.get('stock_quantity', 0)
+            })
+            
+            filtered_movements.append(movement_with_details)
+        
+        # ترتيب حسب التاريخ
+        filtered_movements.sort(key=lambda x: x.get('date', ''), reverse=True)
+        
+        # إحصائيات الحركة
+        in_movements = [m for m in filtered_movements if m.get('type') == 'in']
+        out_movements = [m for m in filtered_movements if m.get('type') == 'out']
+        adjustment_movements = [m for m in filtered_movements if m.get('type') == 'adjustment']
+        
+        total_in = sum(m.get('quantity', 0) for m in in_movements)
+        total_out = sum(m.get('quantity', 0) for m in out_movements)
+        total_adjustments = sum(m.get('quantity', 0) for m in adjustment_movements)
+        
+        # تجميع حسب المنتج
+        product_summary = {}
+        for movement in filtered_movements:
+            product_id = movement.get('product_id')
+            if product_id not in product_summary:
+                product_summary[product_id] = {
+                    'product_name': movement.get('product_name'),
+                    'product_sku': movement.get('product_sku'),
+                    'total_in': 0,
+                    'total_out': 0,
+                    'total_adjustments': 0,
+                    'current_stock': movement.get('current_stock', 0),
+                    'movements_count': 0
+                }
+            
+            summary = product_summary[product_id]
+            summary['movements_count'] += 1
+            
+            if movement.get('type') == 'in':
+                summary['total_in'] += movement.get('quantity', 0)
+            elif movement.get('type') == 'out':
+                summary['total_out'] += movement.get('quantity', 0)
+            elif movement.get('type') == 'adjustment':
+                summary['total_adjustments'] += movement.get('quantity', 0)
+        
+        # تجميع حسب السبب
+        reason_summary = {}
+        for movement in filtered_movements:
+            reason = movement.get('reason', 'غير محدد')
+            if reason not in reason_summary:
+                reason_summary[reason] = {
+                    'reason_name': get_movement_reason_name(reason),
+                    'total_quantity': 0,
+                    'movements_count': 0
+                }
+            
+            reason_summary[reason]['total_quantity'] += movement.get('quantity', 0)
+            reason_summary[reason]['movements_count'] += 1
+        
+        summary_data = {
+            'total_movements': len(filtered_movements),
+            'total_in': total_in,
+            'total_out': total_out,
+            'total_adjustments': total_adjustments,
+            'net_movement': total_in - total_out + total_adjustments,
+            'products_affected': len(product_summary),
+            'date_range': {
+                'start': start_date,
+                'end': end_date
+            }
+        }
+        
         return jsonify({
             'success': True,
             'movements': filtered_movements,
-            'total_movements': len(filtered_movements)
+            'summary': summary_data,
+            'product_summary': list(product_summary.values()),
+            'reason_summary': list(reason_summary.values())
         })
-
+        
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)})
+
+def get_movement_reason_name(reason):
+    """ترجمة أسباب حركة المخزون"""
+    reason_names = {
+        'sale': 'بيع',
+        'purchase': 'شراء',
+        'return': 'مردود',
+        'post_sale_return': 'مردود بعد البيع',
+        'adjustment': 'تعديل',
+        'damage': 'تلف',
+        'theft': 'فقدان',
+        'transfer': 'نقل',
+        'initial': 'رصيد افتتاحي'
+    }
+    return reason_names.get(reason, reason)
 
 @app.route('/api/reports/customers-debt', methods=['GET'])
 @require_permission('customers')
