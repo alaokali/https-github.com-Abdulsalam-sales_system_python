@@ -2305,6 +2305,1210 @@ def get_products_price_list():
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)})
 
+@app.route('/api/reports/daily-sales')
+@require_permission('reports')
+def get_daily_sales_report():
+    """تقرير المبيعات اليومي المفصل"""
+    try:
+        if not check_detailed_permission(session['user_id'], 'reports_daily'):
+            return jsonify({'success': False, 'message': 'ليس لديك صلاحية لعرض التقارير اليومية'})
+        
+        data = load_database()
+        sales = data.get('sales', {})
+        products = data.get('products', {})
+        customers = data.get('customers', {})
+        
+        # التاريخ المطلوب (افتراضياً اليوم)
+        target_date = request.args.get('date', datetime.now().strftime('%Y-%m-%d'))
+        
+        # فلترة المبيعات لليوم المحدد
+        daily_sales = []
+        total_revenue = 0
+        total_cost = 0
+        total_profit = 0
+        total_tax = 0
+        total_discount = 0
+        total_returns = 0
+        
+        cash_sales = 0
+        credit_sales = 0
+        
+        product_summary = {}
+        customer_summary = {}
+        hourly_breakdown = {str(hour).zfill(2): {'sales_count': 0, 'revenue': 0} for hour in range(24)}
+        
+        for sale_id, sale in sales.items():
+            sale_date = sale.get('date', '')[:10]
+            if sale_date != target_date:
+                continue
+            
+            # استخراج الساعة
+            sale_time = sale.get('date', '')
+            hour = '00'
+            if 'T' in sale_time and len(sale_time) > 13:
+                hour = sale_time[11:13]
+            
+            # معلومات البيع
+            sale_amount = sale.get('total_amount', 0)
+            sale_discount = sale.get('discount_amount', 0)
+            sale_tax = sale.get('tax_amount', 0)
+            sale_returns = sale.get('returns_amount', 0)
+            payment_method = sale.get('payment_method', 'نقدي')
+            
+            total_revenue += sale_amount
+            total_discount += sale_discount
+            total_tax += sale_tax
+            total_returns += sale_returns
+            
+            if payment_method == 'نقدي':
+                cash_sales += sale_amount
+            else:
+                credit_sales += sale_amount
+            
+            # إضافة للتوزيع الساعي
+            if hour in hourly_breakdown:
+                hourly_breakdown[hour]['sales_count'] += 1
+                hourly_breakdown[hour]['revenue'] += sale_amount
+            
+            # تحليل المنتجات
+            sale_cost = 0
+            for item in sale.get('items', []):
+                product_id = item.get('product_id')
+                quantity = item.get('quantity', 0)
+                return_quantity = item.get('return_quantity', 0)
+                effective_quantity = quantity - return_quantity
+                item_price = item.get('price', 0)
+                
+                # معلومات المنتج
+                product = products.get(product_id, {})
+                cost_price = product.get('cost_price', 0)
+                item_cost = effective_quantity * cost_price
+                item_revenue = effective_quantity * item_price
+                item_profit = item_revenue - item_cost
+                
+                sale_cost += item_cost
+                
+                # تجميع المنتجات
+                if product_id not in product_summary:
+                    product_summary[product_id] = {
+                        'product_name': product.get('name', item.get('name', '')),
+                        'product_sku': product.get('sku', ''),
+                        'category': product.get('category', ''),
+                        'total_quantity': 0,
+                        'total_revenue': 0,
+                        'total_cost': 0,
+                        'total_profit': 0,
+                        'total_returns': 0,
+                        'sales_count': 0
+                    }
+                
+                product_sum = product_summary[product_id]
+                product_sum['total_quantity'] += effective_quantity
+                product_sum['total_revenue'] += item_revenue
+                product_sum['total_cost'] += item_cost
+                product_sum['total_profit'] += item_profit
+                product_sum['total_returns'] += return_quantity
+                product_sum['sales_count'] += 1
+            
+            total_cost += sale_cost
+            total_profit += (sale_amount - sale_cost)
+            
+            # تجميع العملاء
+            customer_id = sale.get('customer_id')
+            customer_name = sale.get('customer_name', 'عميل عادي')
+            
+            if customer_id:
+                if customer_id not in customer_summary:
+                    customer_summary[customer_id] = {
+                        'customer_name': customer_name,
+                        'customer_phone': customers.get(customer_id, {}).get('phone', ''),
+                        'total_purchases': 0,
+                        'total_amount': 0,
+                        'sales_count': 0,
+                        'payment_methods': {}
+                    }
+                
+                customer_sum = customer_summary[customer_id]
+                customer_sum['total_amount'] += sale_amount
+                customer_sum['sales_count'] += 1
+                
+                if payment_method not in customer_sum['payment_methods']:
+                    customer_sum['payment_methods'][payment_method] = 0
+                customer_sum['payment_methods'][payment_method] += sale_amount
+            
+            # إضافة تفاصيل البيع
+            daily_sales.append({
+                'sale_id': sale_id,
+                'invoice_number': sale.get('invoice_number'),
+                'time': sale.get('date')[11:19] if len(sale.get('date', '')) > 19 else '',
+                'customer_name': customer_name,
+                'payment_method': payment_method,
+                'items_count': len(sale.get('items', [])),
+                'subtotal': sale.get('subtotal', 0),
+                'discount_amount': sale_discount,
+                'tax_amount': sale_tax,
+                'total_amount': sale_amount,
+                'returns_amount': sale_returns,
+                'cashier_name': sale.get('cashier_name', ''),
+                'notes': sale.get('notes', '')
+            })
+        
+        # ترتيب المبيعات حسب الوقت
+        daily_sales.sort(key=lambda x: x['time'], reverse=True)
+        
+        # أفضل المنتجات مبيعاً
+        top_products = sorted(product_summary.values(), key=lambda x: x['total_quantity'], reverse=True)[:10]
+        
+        # أفضل العملاء
+        top_customers = sorted(customer_summary.values(), key=lambda x: x['total_amount'], reverse=True)[:10]
+        
+        # إحصائيات الساعات النشطة
+        active_hours = [hour for hour, data in hourly_breakdown.items() if data['sales_count'] > 0]
+        peak_hour = max(hourly_breakdown.items(), key=lambda x: x[1]['revenue'])[0] if active_hours else '00'
+        
+        # ملخص اليوم
+        summary = {
+            'date': target_date,
+            'total_sales': len(daily_sales),
+            'total_revenue': total_revenue,
+            'total_cost': total_cost,
+            'total_profit': total_profit,
+            'profit_margin': (total_profit / total_revenue * 100) if total_revenue > 0 else 0,
+            'total_discount': total_discount,
+            'total_tax': total_tax,
+            'total_returns': total_returns,
+            'net_revenue': total_revenue - total_returns,
+            'cash_sales': cash_sales,
+            'credit_sales': credit_sales,
+            'cash_percentage': (cash_sales / total_revenue * 100) if total_revenue > 0 else 0,
+            'average_sale_amount': total_revenue / len(daily_sales) if daily_sales else 0,
+            'products_sold': len(product_summary),
+            'unique_customers': len(customer_summary),
+            'peak_hour': peak_hour,
+            'active_hours_count': len(active_hours),
+            'first_sale_time': daily_sales[-1]['time'] if daily_sales else None,
+            'last_sale_time': daily_sales[0]['time'] if daily_sales else None
+        }
+        
+        return jsonify({
+            'success': True,
+            'summary': summary,
+            'sales': daily_sales,
+            'product_summary': top_products,
+            'customer_summary': top_customers,
+            'hourly_breakdown': hourly_breakdown,
+            'date': target_date
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})
+
+@app.route('/api/reports/user-activity')
+@require_permission('users')
+def get_user_activity_report():
+    """تقرير نشاط المستخدمين المفصل"""
+    try:
+        current_user = get_current_user()
+        if not current_user or current_user.get('role') != 'admin':
+            if not check_detailed_permission(session['user_id'], 'users_activity'):
+                return jsonify({'success': False, 'message': 'هذا التقرير متاح للمدير فقط'})
+        
+        data = load_database()
+        users = data.get('users', {})
+        activity_log = data.get('activity_log', {})
+        sales = data.get('sales', {})
+        
+        # فلاتر التقرير
+        start_date = request.args.get('start_date')
+        end_date = request.args.get('end_date')
+        user_id = request.args.get('user_id')
+        activity_type = request.args.get('activity_type')
+        
+        # إعداد تجميع البيانات
+        user_activities = {}
+        
+        # تحليل سجل الأنشطة
+        for log_id, log_entry in activity_log.items():
+            # فلترة التاريخ
+            log_date = log_entry.get('timestamp', '')[:10]
+            if start_date and log_date < start_date:
+                continue
+            if end_date and log_date > end_date:
+                continue
+            
+            # فلترة المستخدم
+            entry_user_id = log_entry.get('user_id')
+            if user_id and entry_user_id != user_id:
+                continue
+            
+            # فلترة نوع النشاط
+            if activity_type and log_entry.get('action') != activity_type:
+                continue
+            
+            # إعداد بيانات المستخدم
+            if entry_user_id not in user_activities:
+                user_info = None
+                for username, user in users.items():
+                    if user.get('id') == entry_user_id:
+                        user_info = user
+                        break
+                
+                user_activities[entry_user_id] = {
+                    'user_id': entry_user_id,
+                    'username': user_info.get('username', 'مجهول') if user_info else 'محذوف',
+                    'full_name': user_info.get('full_name', 'مجهول') if user_info else 'محذوف',
+                    'role': user_info.get('role', 'غير محدد') if user_info else 'محذوف',
+                    'is_active': user_info.get('is_active', False) if user_info else False,
+                    'total_activities': 0,
+                    'activities_by_type': {},
+                    'activities_by_date': {},
+                    'recent_activities': [],
+                    'login_sessions': [],
+                    'sales_made': 0,
+                    'total_sales_amount': 0
+                }
+            
+            user_activity = user_activities[entry_user_id]
+            user_activity['total_activities'] += 1
+            
+            # تجميع حسب نوع النشاط
+            action = log_entry.get('action', 'غير محدد')
+            if action not in user_activity['activities_by_type']:
+                user_activity['activities_by_type'][action] = 0
+            user_activity['activities_by_type'][action] += 1
+            
+            # تجميع حسب التاريخ
+            if log_date not in user_activity['activities_by_date']:
+                user_activity['activities_by_date'][log_date] = 0
+            user_activity['activities_by_date'][log_date] += 1
+            
+            # إضافة للأنشطة الحديثة (آخر 20 نشاط)
+            if len(user_activity['recent_activities']) < 20:
+                user_activity['recent_activities'].append({
+                    'timestamp': log_entry.get('timestamp'),
+                    'action': action,
+                    'action_name': get_activity_action_name(action),
+                    'description': log_entry.get('description', ''),
+                    'ip_address': log_entry.get('ip_address', ''),
+                    'user_agent': log_entry.get('user_agent', '')
+                })
+            
+            # تسجيل جلسات تسجيل الدخول
+            if action == 'login':
+                user_activity['login_sessions'].append({
+                    'login_time': log_entry.get('timestamp'),
+                    'ip_address': log_entry.get('ip_address', ''),
+                    'user_agent': log_entry.get('user_agent', '')
+                })
+        
+        # تحليل المبيعات لكل مستخدم
+        for sale_id, sale in sales.items():
+            cashier_id = sale.get('cashier_id')
+            if cashier_id in user_activities:
+                # فلترة التاريخ للمبيعات
+                sale_date = sale.get('date', '')[:10]
+                if start_date and sale_date < start_date:
+                    continue
+                if end_date and sale_date > end_date:
+                    continue
+                
+                user_activities[cashier_id]['sales_made'] += 1
+                user_activities[cashier_id]['total_sales_amount'] += sale.get('total_amount', 0)
+        
+        # ترتيب الأنشطة الحديثة حسب الوقت
+        for user_activity in user_activities.values():
+            user_activity['recent_activities'].sort(key=lambda x: x['timestamp'], reverse=True)
+            user_activity['login_sessions'].sort(key=lambda x: x['login_time'], reverse=True)
+        
+        # تحويل إلى قائمة وترتيب
+        users_list = list(user_activities.values())
+        users_list.sort(key=lambda x: x['total_activities'], reverse=True)
+        
+        # إحصائيات عامة
+        total_users_active = len([u for u in users_list if u['total_activities'] > 0])
+        total_activities = sum(u['total_activities'] for u in users_list)
+        total_sales_by_users = sum(u['sales_made'] for u in users_list)
+        total_sales_amount = sum(u['total_sales_amount'] for u in users_list)
+        
+        # أكثر الأنشطة شيوعاً
+        all_activity_types = {}
+        for user_activity in users_list:
+            for activity_type, count in user_activity['activities_by_type'].items():
+                if activity_type not in all_activity_types:
+                    all_activity_types[activity_type] = 0
+                all_activity_types[activity_type] += count
+        
+        top_activity_types = sorted(all_activity_types.items(), key=lambda x: x[1], reverse=True)[:10]
+        
+        # أكثر المستخدمين نشاطاً
+        most_active_users = users_list[:10]
+        
+        # إحصائيات يومية
+        daily_activity = {}
+        for user_activity in users_list:
+            for date, count in user_activity['activities_by_date'].items():
+                if date not in daily_activity:
+                    daily_activity[date] = 0
+                daily_activity[date] += count
+        
+        summary = {
+            'total_users': len(users),
+            'active_users': total_users_active,
+            'inactive_users': len(users) - total_users_active,
+            'total_activities': total_activities,
+            'average_activities_per_user': total_activities / total_users_active if total_users_active > 0 else 0,
+            'total_sales_by_users': total_sales_by_users,
+            'total_sales_amount': total_sales_amount,
+            'average_sales_per_user': total_sales_by_users / total_users_active if total_users_active > 0 else 0,
+            'date_range': {
+                'start': start_date,
+                'end': end_date
+            }
+        }
+        
+        return jsonify({
+            'success': True,
+            'summary': summary,
+            'users': users_list,
+            'most_active_users': most_active_users,
+            'top_activity_types': [{'type': t[0], 'type_name': get_activity_action_name(t[0]), 'count': t[1]} for t in top_activity_types],
+            'daily_activity': daily_activity
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})
+
+def get_activity_action_name(action):
+    """ترجمة أنواع أنشطة المستخدمين"""
+    action_names = {
+        'login': 'تسجيل دخول',
+        'logout': 'تسجيل خروج',
+        'complete_sale': 'إتمام بيع',
+        'add_product': 'إضافة منتج',
+        'edit_product': 'تعديل منتج',
+        'delete_product': 'حذف منتج',
+        'add_customer': 'إضافة عميل',
+        'edit_customer': 'تعديل عميل',
+        'delete_customer': 'حذف عميل',
+        'add_purchase': 'إضافة مشتريات',
+        'edit_purchase': 'تعديل مشتريات',
+        'add_stock': 'إضافة مخزون',
+        'adjust_stock': 'تعديل مخزون',
+        'post_sale_return': 'مردود بعد البيع',
+        'process_returns': 'معالجة مردودات',
+        'partner_transaction': 'معاملة شريك',
+        'settings_update': 'تحديث إعدادات',
+        'user_management': 'إدارة مستخدمين',
+        'backup_create': 'إنشاء نسخة احتياطية',
+        'backup_restore': 'استعادة نسخة احتياطية'
+    }
+    return action_names.get(action, action)
+
+@app.route('/api/excel/download-template')
+@require_permission('purchases')
+def download_excel_template():
+    """تنزيل قالب Excel للفواتير"""
+    try:
+        if not check_detailed_permission(session['user_id'], 'purchases_import'):
+            return jsonify({'success': False, 'message': 'ليس لديك صلاحية لاستيراد الفواتير'})
+        
+        # إنشاء قالب CSV بدلاً من Excel (أبسط ولا يحتاج مكتبات)
+        template_content = """رقم الفاتورة,التاريخ,اسم العميل,هاتف العميل,اسم المنتج,رمز المنتج,الكمية,سعر الوحدة,المجموع,ملاحظات,حالة المردود
+INV-SAMPLE,2025-01-05,أحمد محمد,0501234567,iPhone 15 Pro Max,IP15PM256,2,4200,8400,أسود 256GB,لا
+,,,,سماعة AirPods Pro,APP3GEN,1,899,899,الجيل الثالث,لا
+,,,,حافظة iPhone 15,CASE15PM,3,45,135,شفافة,نعم
+,,,,شاحن سريع 20W,CHRG20W,2,85,170,أبيض أصلي,لا"""
+        
+        # إنشاء ملف مؤقت
+        import tempfile
+        temp_file = tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False, encoding='utf-8-sig')
+        temp_file.write(template_content)
+        temp_file.close()
+        
+        return send_file(
+            temp_file.name,
+            as_attachment=True,
+            download_name='invoice_template.csv',
+            mimetype='text/csv'
+        )
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})
+
+@app.route('/api/excel/import-invoice', methods=['POST'])
+@require_permission('purchases')
+def import_excel_invoice():
+    """استيراد فاتورة من ملف Excel/CSV"""
+    try:
+        if not check_detailed_permission(session['user_id'], 'purchases_import'):
+            return jsonify({'success': False, 'message': 'ليس لديك صلاحية لاستيراد الفواتير'})
+        
+        if 'file' not in request.files:
+            return jsonify({'success': False, 'message': 'لم يتم رفع أي ملف'})
+        
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({'success': False, 'message': 'لم يتم اختيار ملف'})
+        
+        # التحقق من نوع الملف
+        if not file.filename.lower().endswith(('.csv', '.xlsx', '.xls')):
+            return jsonify({'success': False, 'message': 'نوع الملف غير مدعوم. يرجى استخدام ملفات CSV أو Excel'})
+        
+        # قراءة الملف
+        import tempfile
+        import csv
+        import io
+        
+        temp_file = tempfile.NamedTemporaryFile(delete=False)
+        file.save(temp_file.name)
+        
+        try:
+            # قراءة CSV
+            with open(temp_file.name, 'r', encoding='utf-8-sig') as csvfile:
+                # محاولة تحديد الفاصل
+                sample = csvfile.read(1024)
+                csvfile.seek(0)
+                sniffer = csv.Sniffer()
+                delimiter = sniffer.sniff(sample).delimiter
+                
+                reader = csv.DictReader(csvfile, delimiter=delimiter)
+                rows = list(reader)
+        except UnicodeDecodeError:
+            # محاولة مع ترميز مختلف
+            with open(temp_file.name, 'r', encoding='windows-1256') as csvfile:
+                reader = csv.DictReader(csvfile)
+                rows = list(reader)
+        
+        if not rows:
+            return jsonify({'success': False, 'message': 'الملف فارغ أو لا يحتوي على بيانات'})
+        
+        # معالجة البيانات
+        data = load_database()
+        products = data.get('products', {})
+        customers = data.get('customers', {})
+        purchases = data.get('purchases', {})
+        
+        # استخراج معلومات الفاتورة
+        first_row = rows[0]
+        invoice_number = first_row.get('رقم الفاتورة', f"IMP-{datetime.now().strftime('%Y%m%d')}-{len(purchases) + 1:04d}")
+        invoice_date = first_row.get('التاريخ', datetime.now().strftime('%Y-%m-%d'))
+        customer_name = first_row.get('اسم العميل', 'عميل عادي')
+        customer_phone = first_row.get('هاتف العميل', '')
+        
+        # العثور على العميل أو إنشاء عميل جديد
+        customer_id = None
+        for cid, customer in customers.items():
+            if customer.get('phone') == customer_phone and customer_phone:
+                customer_id = cid
+                break
+            elif customer.get('name') == customer_name:
+                customer_id = cid
+                break
+        
+        # معالجة المنتجات
+        processed_items = []
+        total_amount = 0
+        returns_amount = 0
+        
+        for row in rows:
+            product_name = row.get('اسم المنتج', '').strip()
+            if not product_name:
+                continue
+            
+            product_sku = row.get('رمز المنتج', '').strip()
+            quantity = int(row.get('الكمية', 0)) if row.get('الكمية') else 0
+            unit_price = float(row.get('سعر الوحدة', 0)) if row.get('سعر الوحدة') else 0
+            total_price = float(row.get('المجموع', 0)) if row.get('المجموع') else (quantity * unit_price)
+            notes = row.get('ملاحظات', '').strip()
+            is_returned = row.get('حالة المردود', 'لا').strip().lower() in ['نعم', 'yes', '1', 'true']
+            
+            if quantity <= 0:
+                continue
+            
+            # البحث عن المنتج في النظام
+            product_id = None
+            product = None
+            
+            # البحث بالاسم أو SKU
+            for pid, p in products.items():
+                if (p.get('name') == product_name or 
+                    p.get('sku') == product_sku or 
+                    p.get('barcode') == product_sku):
+                    product_id = pid
+                    product = p
+                    break
+            
+            if not product_id:
+                # إنشاء منتج جديد إذا لم يوجد
+                product_id = str(uuid.uuid4())
+                product = {
+                    'id': product_id,
+                    'name': product_name,
+                    'sku': product_sku if product_sku else f'IMP-{product_id[:8]}',
+                    'barcode': product_sku,
+                    'category': 'imported',
+                    'subcategory': 'مستورد',
+                    'description': f'منتج مستورد من Excel - {notes}',
+                    'cost_price': unit_price * 0.8,  # تقدير سعر التكلفة
+                    'selling_price': unit_price,
+                    'wholesale_price': unit_price * 0.9,
+                    'purchase_price': unit_price * 0.8,
+                    'stock_quantity': 0,
+                    'min_stock_level': 5,
+                    'max_stock_level': 100,
+                    'unit': 'قطعة',
+                    'supplier_id': '',
+                    'is_active': True,
+                    'created_at': datetime.now().isoformat(),
+                    'created_by': session['user_id']
+                }
+                products[product_id] = product
+            
+            # إضافة العنصر
+            item = {
+                'product_id': product_id,
+                'name': product_name,
+                'sku': product_sku,
+                'quantity': quantity,
+                'price': unit_price,
+                'total': total_price,
+                'notes': notes,
+                'is_returned': is_returned,
+                'return_quantity': quantity if is_returned else 0
+            }
+            
+            processed_items.append(item)
+            
+            if is_returned:
+                returns_amount += total_price
+            else:
+                total_amount += total_price
+                # إضافة للمخزون
+                products[product_id]['stock_quantity'] += quantity
+        
+        if not processed_items:
+            return jsonify({'success': False, 'message': 'لم يتم العثور على منتجات صالحة في الملف'})
+        
+        # إنشاء سجل الشراء/الفاتورة المستوردة
+        purchase_id = str(uuid.uuid4())
+        purchase_record = {
+            'id': purchase_id,
+            'invoice_number': invoice_number,
+            'date': invoice_date,
+            'supplier': 'مستورد من Excel',
+            'customer_id': customer_id,
+            'customer_name': customer_name,
+            'items': processed_items,
+            'subtotal': total_amount + returns_amount,
+            'returns_amount': returns_amount,
+            'net_amount': total_amount,
+            'total_amount': total_amount,
+            'status': 'completed',
+            'type': 'imported',
+            'imported_by': session['user_id'],
+            'imported_at': datetime.now().isoformat(),
+            'notes': f'فاتورة مستوردة من ملف {file.filename}'
+        }
+        
+        purchases[purchase_id] = purchase_record
+        
+        # تسجيل حركات المخزون للمنتجات غير المردودة
+        inventory_movements = data.get('inventory_movements', {})
+        for item in processed_items:
+            if not item['is_returned']:
+                movement_id = str(uuid.uuid4())
+                inventory_movements[movement_id] = {
+                    'id': movement_id,
+                    'product_id': item['product_id'],
+                    'product_name': item['name'],
+                    'type': 'in',
+                    'quantity': item['quantity'],
+                    'reason': 'import',
+                    'reference_id': purchase_id,
+                    'reference_type': 'imported_invoice',
+                    'date': datetime.now().isoformat(),
+                    'user_id': session['user_id'],
+                    'notes': f'استيراد من Excel - {invoice_number}'
+                }
+        
+        # حفظ البيانات
+        data['products'] = products
+        data['purchases'] = purchases
+        data['inventory_movements'] = inventory_movements
+        
+        if save_database(data):
+            # تسجيل النشاط
+            log_activity(session['user_id'], 'import_excel_invoice', {
+                'invoice_number': invoice_number,
+                'items_count': len(processed_items),
+                'total_amount': total_amount,
+                'returns_amount': returns_amount,
+                'filename': file.filename
+            })
+            
+            # حذف الملف المؤقت
+            os.unlink(temp_file.name)
+            
+            return jsonify({
+                'success': True,
+                'message': f'تم استيراد الفاتورة بنجاح',
+                'invoice_number': invoice_number,
+                'items_imported': len(processed_items),
+                'total_amount': total_amount,
+                'returns_amount': returns_amount,
+                'new_products_created': len([item for item in processed_items if item['product_id'] in products])
+            })
+        else:
+            return jsonify({'success': False, 'message': 'خطأ في حفظ البيانات'})
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})
+
+@app.route('/api/reports/products-detailed')
+@require_permission('reports')
+def get_products_detailed_report():
+    """تقرير تفصيلي شامل للمنتجات"""
+    try:
+        if not check_detailed_permission(session['user_id'], 'reports_products'):
+            return jsonify({'success': False, 'message': 'ليس لديك صلاحية لعرض تقارير المنتجات'})
+        
+        data = load_database()
+        products = data.get('products', {})
+        sales = data.get('sales', {})
+        inventory_movements = data.get('inventory_movements', {})
+        purchases = data.get('purchases', {})
+        
+        # فلاتر التقرير
+        category = request.args.get('category')
+        status = request.args.get('status', 'all')  # active, inactive, all
+        stock_status = request.args.get('stock_status', 'all')  # in_stock, low_stock, out_of_stock, all
+        
+        detailed_products = []
+        
+        for product_id, product in products.items():
+            # فلترة الفئة
+            if category and product.get('category') != category:
+                continue
+            
+            # فلترة الحالة
+            is_active = product.get('is_active', True)
+            if status == 'active' and not is_active:
+                continue
+            if status == 'inactive' and is_active:
+                continue
+            
+            # فلترة حالة المخزون
+            stock_qty = product.get('stock_quantity', 0)
+            min_stock = product.get('min_stock_level', 5)
+            
+            if stock_status == 'out_of_stock' and stock_qty > 0:
+                continue
+            if stock_status == 'low_stock' and (stock_qty == 0 or stock_qty > min_stock):
+                continue
+            if stock_status == 'in_stock' and stock_qty <= min_stock:
+                continue
+            
+            # تحليل المبيعات
+            sales_data = {
+                'total_sold': 0,
+                'total_revenue': 0,
+                'total_returns': 0,
+                'sales_count': 0,
+                'last_sale_date': None,
+                'best_selling_month': None
+            }
+            
+            monthly_sales = {}
+            
+            for sale_id, sale in sales.items():
+                for item in sale.get('items', []):
+                    if item.get('product_id') == product_id:
+                        quantity = item.get('quantity', 0)
+                        return_qty = item.get('return_quantity', 0)
+                        effective_qty = quantity - return_qty
+                        revenue = effective_qty * item.get('price', 0)
+                        
+                        sales_data['total_sold'] += effective_qty
+                        sales_data['total_revenue'] += revenue
+                        sales_data['total_returns'] += return_qty
+                        sales_data['sales_count'] += 1
+                        
+                        # تحديث آخر تاريخ بيع
+                        sale_date = sale.get('date', '')
+                        if not sales_data['last_sale_date'] or sale_date > sales_data['last_sale_date']:
+                            sales_data['last_sale_date'] = sale_date
+                        
+                        # تجميع المبيعات الشهرية
+                        month_key = sale_date[:7]  # YYYY-MM
+                        if month_key not in monthly_sales:
+                            monthly_sales[month_key] = 0
+                        monthly_sales[month_key] += effective_qty
+            
+            # أفضل شهر مبيعات
+            if monthly_sales:
+                sales_data['best_selling_month'] = max(monthly_sales.items(), key=lambda x: x[1])
+            
+            # تحليل حركة المخزون
+            inventory_data = {
+                'total_in': 0,
+                'total_out': 0,
+                'total_adjustments': 0,
+                'movements_count': 0,
+                'last_movement_date': None
+            }
+            
+            for movement_id, movement in inventory_movements.items():
+                if movement.get('product_id') == product_id:
+                    quantity = movement.get('quantity', 0)
+                    movement_type = movement.get('type')
+                    
+                    if movement_type == 'in':
+                        inventory_data['total_in'] += quantity
+                    elif movement_type == 'out':
+                        inventory_data['total_out'] += quantity
+                    elif movement_type == 'adjustment':
+                        inventory_data['total_adjustments'] += quantity
+                    
+                    inventory_data['movements_count'] += 1
+                    
+                    # تحديث آخر حركة
+                    movement_date = movement.get('date', '')
+                    if not inventory_data['last_movement_date'] or movement_date > inventory_data['last_movement_date']:
+                        inventory_data['last_movement_date'] = movement_date
+            
+            # تحليل المشتريات
+            purchase_data = {
+                'total_purchased': 0,
+                'total_cost': 0,
+                'purchases_count': 0,
+                'last_purchase_date': None,
+                'average_purchase_price': 0
+            }
+            
+            total_purchase_cost = 0
+            purchase_quantity_total = 0
+            
+            for purchase_id, purchase in purchases.items():
+                for item in purchase.get('items', []):
+                    if item.get('product_id') == product_id:
+                        quantity = item.get('quantity', 0)
+                        cost = item.get('price', 0) * quantity
+                        
+                        purchase_data['total_purchased'] += quantity
+                        purchase_data['total_cost'] += cost
+                        purchase_data['purchases_count'] += 1
+                        
+                        total_purchase_cost += cost
+                        purchase_quantity_total += quantity
+                        
+                        # تحديث آخر شراء
+                        purchase_date = purchase.get('date', '')
+                        if not purchase_data['last_purchase_date'] or purchase_date > purchase_data['last_purchase_date']:
+                            purchase_data['last_purchase_date'] = purchase_date
+            
+            if purchase_quantity_total > 0:
+                purchase_data['average_purchase_price'] = total_purchase_cost / purchase_quantity_total
+            
+            # حساب المؤشرات
+            cost_price = product.get('cost_price', 0)
+            selling_price = product.get('selling_price', 0)
+            
+            profit_margin = ((selling_price - cost_price) / selling_price * 100) if selling_price > 0 else 0
+            turnover_rate = (sales_data['total_sold'] / stock_qty) if stock_qty > 0 else 0
+            
+            # تقييم الأداء
+            performance_score = 0
+            if sales_data['total_sold'] > 0:
+                performance_score += 30
+            if turnover_rate > 2:
+                performance_score += 25
+            if profit_margin > 20:
+                performance_score += 25
+            if stock_qty > min_stock:
+                performance_score += 20
+            
+            # حالة المخزون
+            stock_status_name = "نفد المخزون"
+            if stock_qty > min_stock:
+                stock_status_name = "متوفر"
+            elif stock_qty > 0:
+                stock_status_name = "مخزون منخفض"
+            
+            detailed_product = {
+                'product_id': product_id,
+                'name': product.get('name'),
+                'sku': product.get('sku'),
+                'barcode': product.get('barcode'),
+                'category': product.get('category'),
+                'subcategory': product.get('subcategory'),
+                'description': product.get('description'),
+                'is_active': is_active,
+                
+                # معلومات الأسعار
+                'cost_price': cost_price,
+                'selling_price': selling_price,
+                'wholesale_price': product.get('wholesale_price', 0),
+                'profit_margin': profit_margin,
+                
+                # معلومات المخزون
+                'stock_quantity': stock_qty,
+                'min_stock_level': min_stock,
+                'max_stock_level': product.get('max_stock_level', 0),
+                'stock_status': stock_status_name,
+                
+                # بيانات المبيعات
+                'sales': sales_data,
+                
+                # بيانات المخزون
+                'inventory': inventory_data,
+                
+                # بيانات المشتريات
+                'purchases': purchase_data,
+                
+                # مؤشرات الأداء
+                'performance_score': performance_score,
+                'turnover_rate': turnover_rate,
+                
+                # تواريخ مهمة
+                'created_at': product.get('created_at'),
+                'updated_at': product.get('updated_at'),
+                'last_activity_date': max(filter(None, [
+                    sales_data['last_sale_date'],
+                    inventory_data['last_movement_date'],
+                    purchase_data['last_purchase_date']
+                ]), default=None)
+            }
+            
+            detailed_products.append(detailed_product)
+        
+        # ترتيب النتائج
+        sort_by = request.args.get('sort_by', 'performance_score')
+        sort_order = request.args.get('sort_order', 'desc')
+        
+        if sort_by in ['performance_score', 'turnover_rate', 'profit_margin', 'stock_quantity']:
+            detailed_products.sort(key=lambda x: x[sort_by], reverse=(sort_order == 'desc'))
+        elif sort_by == 'total_sold':
+            detailed_products.sort(key=lambda x: x['sales']['total_sold'], reverse=(sort_order == 'desc'))
+        elif sort_by == 'total_revenue':
+            detailed_products.sort(key=lambda x: x['sales']['total_revenue'], reverse=(sort_order == 'desc'))
+        
+        # إحصائيات عامة
+        total_products = len(detailed_products)
+        active_products = len([p for p in detailed_products if p['is_active']])
+        out_of_stock = len([p for p in detailed_products if p['stock_quantity'] == 0])
+        low_stock = len([p for p in detailed_products if 0 < p['stock_quantity'] <= p['min_stock_level']])
+        
+        avg_performance = sum(p['performance_score'] for p in detailed_products) / total_products if total_products > 0 else 0
+        total_stock_value = sum(p['stock_quantity'] * p['selling_price'] for p in detailed_products)
+        total_revenue = sum(p['sales']['total_revenue'] for p in detailed_products)
+        
+        summary = {
+            'total_products': total_products,
+            'active_products': active_products,
+            'inactive_products': total_products - active_products,
+            'out_of_stock_products': out_of_stock,
+            'low_stock_products': low_stock,
+            'average_performance_score': avg_performance,
+            'total_stock_value': total_stock_value,
+            'total_revenue_all_time': total_revenue,
+            'filters_applied': {
+                'category': category,
+                'status': status,
+                'stock_status': stock_status,
+                'sort_by': sort_by,
+                'sort_order': sort_order
+            }
+        }
+        
+        return jsonify({
+            'success': True,
+            'products': detailed_products,
+            'summary': summary
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})
+
+@app.route('/api/reports/customers-detailed')
+@require_permission('reports')
+def get_customers_detailed_report():
+    """تقرير تفصيلي شامل للعملاء"""
+    try:
+        if not check_detailed_permission(session['user_id'], 'reports_customers'):
+            return jsonify({'success': False, 'message': 'ليس لديك صلاحية لعرض تقارير العملاء'})
+        
+        data = load_database()
+        customers = data.get('customers', {})
+        sales = data.get('sales', {})
+        balance_history = data.get('balance_history', {})
+        returns_data = data.get('returns', {})
+        
+        # فلاتر التقرير
+        customer_type = request.args.get('customer_type', 'all')
+        payment_behavior = request.args.get('payment_behavior', 'all')  # cash, credit, mixed
+        activity_level = request.args.get('activity_level', 'all')  # active, inactive, all
+        
+        detailed_customers = []
+        
+        for customer_id, customer in customers.items():
+            # فلترة نوع العميل
+            if customer_type != 'all' and customer.get('type') != customer_type:
+                continue
+            
+            # تحليل المبيعات
+            sales_data = {
+                'total_orders': 0,
+                'total_spent': 0,
+                'total_items_bought': 0,
+                'average_order_value': 0,
+                'first_purchase_date': None,
+                'last_purchase_date': None,
+                'favorite_category': None,
+                'favorite_products': [],
+                'payment_methods_used': {},
+                'monthly_spending': {}
+            }
+            
+            product_purchases = {}
+            category_purchases = {}
+            
+            for sale_id, sale in sales.items():
+                if sale.get('customer_id') == customer_id:
+                    order_total = sale.get('total_amount', 0)
+                    payment_method = sale.get('payment_method', 'نقدي')
+                    sale_date = sale.get('date', '')
+                    
+                    sales_data['total_orders'] += 1
+                    sales_data['total_spent'] += order_total
+                    
+                    # تحديث تواريخ الشراء
+                    if not sales_data['first_purchase_date'] or sale_date < sales_data['first_purchase_date']:
+                        sales_data['first_purchase_date'] = sale_date
+                    if not sales_data['last_purchase_date'] or sale_date > sales_data['last_purchase_date']:
+                        sales_data['last_purchase_date'] = sale_date
+                    
+                    # طرق الدفع
+                    if payment_method not in sales_data['payment_methods_used']:
+                        sales_data['payment_methods_used'][payment_method] = 0
+                    sales_data['payment_methods_used'][payment_method] += order_total
+                    
+                    # الإنفاق الشهري
+                    month_key = sale_date[:7]
+                    if month_key not in sales_data['monthly_spending']:
+                        sales_data['monthly_spending'][month_key] = 0
+                    sales_data['monthly_spending'][month_key] += order_total
+                    
+                    # تحليل المنتجات
+                    for item in sale.get('items', []):
+                        product_id = item.get('product_id')
+                        quantity = item.get('quantity', 0)
+                        return_qty = item.get('return_quantity', 0)
+                        effective_qty = quantity - return_qty
+                        
+                        sales_data['total_items_bought'] += effective_qty
+                        
+                        # المنتجات المفضلة
+                        if product_id not in product_purchases:
+                            product_purchases[product_id] = {
+                                'name': item.get('name', ''),
+                                'quantity': 0,
+                                'total_spent': 0
+                            }
+                        
+                        product_purchases[product_id]['quantity'] += effective_qty
+                        product_purchases[product_id]['total_spent'] += effective_qty * item.get('price', 0)
+                        
+                        # الفئات المفضلة (نحتاج للمنتجات للحصول على الفئة)
+                        # سنتركها فارغة لتبسيط الكود
+            
+            # حساب متوسط قيمة الطلب
+            if sales_data['total_orders'] > 0:
+                sales_data['average_order_value'] = sales_data['total_spent'] / sales_data['total_orders']
+            
+            # أفضل المنتجات المشتراة
+            if product_purchases:
+                sales_data['favorite_products'] = sorted(
+                    product_purchases.items(), 
+                    key=lambda x: x[1]['quantity'], 
+                    reverse=True
+                )[:5]
+            
+            # تحليل المردودات
+            returns_data_customer = {
+                'total_returns': 0,
+                'total_returns_value': 0,
+                'returns_count': 0,
+                'return_rate': 0
+            }
+            
+            for return_id, return_item in returns_data.items():
+                if return_item.get('customer_id') == customer_id:
+                    returns_data_customer['total_returns'] += return_item.get('quantity', 0)
+                    returns_data_customer['total_returns_value'] += return_item.get('total_amount', 0)
+                    returns_data_customer['returns_count'] += 1
+            
+            # معدل الإرجاع
+            if sales_data['total_items_bought'] > 0:
+                returns_data_customer['return_rate'] = (returns_data_customer['total_returns'] / sales_data['total_items_bought']) * 100
+            
+            # تحليل الرصيد
+            balance_data = {
+                'current_balance': customer.get('current_balance', 0),
+                'credit_limit': customer.get('credit_limit', 0),
+                'available_credit': 0,
+                'payment_history': [],
+                'balance_changes_count': 0
+            }
+            
+            balance_data['available_credit'] = balance_data['credit_limit'] - balance_data['current_balance']
+            
+            # تاريخ المدفوعات
+            for history_id, history in balance_history.items():
+                if history.get('customer_id') == customer_id:
+                    balance_data['payment_history'].append({
+                        'date': history.get('date'),
+                        'type': history.get('type'),
+                        'amount': history.get('amount'),
+                        'description': history.get('description')
+                    })
+                    balance_data['balance_changes_count'] += 1
+            
+            # ترتيب تاريخ المدفوعات
+            balance_data['payment_history'].sort(key=lambda x: x['date'], reverse=True)
+            balance_data['payment_history'] = balance_data['payment_history'][:10]  # آخر 10 معاملات
+            
+            # فلترة سلوك الدفع
+            cash_percentage = 0
+            credit_percentage = 0
+            total_payment_amount = sum(sales_data['payment_methods_used'].values())
+            
+            if total_payment_amount > 0:
+                cash_percentage = (sales_data['payment_methods_used'].get('نقدي', 0) / total_payment_amount) * 100
+                credit_percentage = (sales_data['payment_methods_used'].get('آجل', 0) / total_payment_amount) * 100
+            
+            if payment_behavior == 'cash' and credit_percentage > 10:
+                continue
+            if payment_behavior == 'credit' and cash_percentage > 10:
+                continue
+            
+            # فلترة مستوى النشاط
+            days_since_last_purchase = None
+            if sales_data['last_purchase_date']:
+                from datetime import datetime
+                last_purchase = datetime.fromisoformat(sales_data['last_purchase_date'].replace('Z', '+00:00'))
+                days_since_last_purchase = (datetime.now() - last_purchase).days
+            
+            is_active = days_since_last_purchase is not None and days_since_last_purchase <= 90
+            
+            if activity_level == 'active' and not is_active:
+                continue
+            if activity_level == 'inactive' and is_active:
+                continue
+            
+            # تقييم العميل
+            customer_score = 0
+            if sales_data['total_spent'] > 10000:
+                customer_score += 30
+            if sales_data['total_orders'] > 10:
+                customer_score += 25
+            if returns_data_customer['return_rate'] < 5:
+                customer_score += 25
+            if balance_data['current_balance'] < balance_data['credit_limit'] * 0.8:
+                customer_score += 20
+            
+            # تصنيف العميل
+            customer_segment = "عميل جديد"
+            if sales_data['total_spent'] > 50000:
+                customer_segment = "عميل VIP"
+            elif sales_data['total_spent'] > 20000:
+                customer_segment = "عميل مميز"
+            elif sales_data['total_spent'] > 5000:
+                customer_segment = "عميل منتظم"
+            
+            detailed_customer = {
+                'customer_id': customer_id,
+                'name': customer.get('name'),
+                'phone': customer.get('phone'),
+                'email': customer.get('email'),
+                'address': customer.get('address'),
+                'type': customer.get('type'),
+                'customer_segment': customer_segment,
+                'customer_score': customer_score,
+                'is_active': is_active,
+                'days_since_last_purchase': days_since_last_purchase,
+                
+                # بيانات المبيعات
+                'sales': sales_data,
+                
+                # بيانات المردودات
+                'returns': returns_data_customer,
+                
+                # بيانات الرصيد
+                'balance': balance_data,
+                
+                # سلوك الدفع
+                'payment_behavior': {
+                    'cash_percentage': cash_percentage,
+                    'credit_percentage': credit_percentage,
+                    'preferred_method': 'نقدي' if cash_percentage > credit_percentage else 'آجل'
+                },
+                
+                # معلومات إضافية
+                'created_at': customer.get('created_at'),
+                'updated_at': customer.get('updated_at')
+            }
+            
+            detailed_customers.append(detailed_customer)
+        
+        # ترتيب النتائج
+        sort_by = request.args.get('sort_by', 'customer_score')
+        sort_order = request.args.get('sort_order', 'desc')
+        
+        if sort_by in ['customer_score', 'total_spent', 'total_orders', 'current_balance']:
+            if sort_by == 'total_spent':
+                detailed_customers.sort(key=lambda x: x['sales']['total_spent'], reverse=(sort_order == 'desc'))
+            elif sort_by == 'total_orders':
+                detailed_customers.sort(key=lambda x: x['sales']['total_orders'], reverse=(sort_order == 'desc'))
+            elif sort_by == 'current_balance':
+                detailed_customers.sort(key=lambda x: x['balance']['current_balance'], reverse=(sort_order == 'desc'))
+            else:
+                detailed_customers.sort(key=lambda x: x[sort_by], reverse=(sort_order == 'desc'))
+        
+        # إحصائيات عامة
+        total_customers = len(detailed_customers)
+        active_customers = len([c for c in detailed_customers if c['is_active']])
+        vip_customers = len([c for c in detailed_customers if c['customer_segment'] == 'عميل VIP'])
+        
+        total_revenue = sum(c['sales']['total_spent'] for c in detailed_customers)
+        total_balance = sum(c['balance']['current_balance'] for c in detailed_customers)
+        avg_customer_value = total_revenue / total_customers if total_customers > 0 else 0
+        
+        summary = {
+            'total_customers': total_customers,
+            'active_customers': active_customers,
+            'inactive_customers': total_customers - active_customers,
+            'vip_customers': vip_customers,
+            'total_revenue': total_revenue,
+            'total_outstanding_balance': total_balance,
+            'average_customer_value': avg_customer_value,
+            'filters_applied': {
+                'customer_type': customer_type,
+                'payment_behavior': payment_behavior,
+                'activity_level': activity_level,
+                'sort_by': sort_by,
+                'sort_order': sort_order
+            }
+        }
+        
+        return jsonify({
+            'success': True,
+            'customers': detailed_customers,
+            'summary': summary
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})
+
 # ===== إدارة المنتجات =====
 
 @app.route('/products')
