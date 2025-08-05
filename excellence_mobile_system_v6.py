@@ -1789,6 +1789,148 @@ def get_transaction_type_name(transaction_type):
     }
     return type_names.get(transaction_type, transaction_type)
 
+@app.route('/api/reports/inventory-movement')
+@require_permission('reports')
+def get_inventory_movement_report():
+    """تقرير حركة المخزون المفصل"""
+    try:
+        if not check_detailed_permission(session['user_id'], 'reports_inventory'):
+            return jsonify({'success': False, 'message': 'ليس لديك صلاحية لعرض تقارير المخزون'})
+        
+        data = load_database()
+        inventory_movements = data.get('inventory_movements', {})
+        products = data.get('products', {})
+        
+        # فلاتر التقرير
+        start_date = request.args.get('start_date')
+        end_date = request.args.get('end_date')
+        product_id = request.args.get('product_id')
+        movement_type = request.args.get('movement_type')  # in, out, adjustment
+        reason = request.args.get('reason')
+        
+        filtered_movements = []
+        
+        for movement_id, movement in inventory_movements.items():
+            # فلترة التاريخ
+            if start_date and movement.get('date', '')[:10] < start_date:
+                continue
+            if end_date and movement.get('date', '')[:10] > end_date:
+                continue
+            
+            # فلترة المنتج
+            if product_id and movement.get('product_id') != product_id:
+                continue
+            
+            # فلترة نوع الحركة
+            if movement_type and movement.get('type') != movement_type:
+                continue
+            
+            # فلترة السبب
+            if reason and movement.get('reason') != reason:
+                continue
+            
+            # إضافة تفاصيل المنتج
+            movement_with_details = movement.copy()
+            product = products.get(movement.get('product_id'), {})
+            movement_with_details.update({
+                'product_name': product.get('name', movement.get('product_name', '')),
+                'product_sku': product.get('sku', ''),
+                'product_category': product.get('category', ''),
+                'current_stock': product.get('stock_quantity', 0)
+            })
+            
+            filtered_movements.append(movement_with_details)
+        
+        # ترتيب حسب التاريخ
+        filtered_movements.sort(key=lambda x: x.get('date', ''), reverse=True)
+        
+        # إحصائيات الحركة
+        in_movements = [m for m in filtered_movements if m.get('type') == 'in']
+        out_movements = [m for m in filtered_movements if m.get('type') == 'out']
+        adjustment_movements = [m for m in filtered_movements if m.get('type') == 'adjustment']
+        
+        total_in = sum(m.get('quantity', 0) for m in in_movements)
+        total_out = sum(m.get('quantity', 0) for m in out_movements)
+        total_adjustments = sum(m.get('quantity', 0) for m in adjustment_movements)
+        
+        # تجميع حسب المنتج
+        product_summary = {}
+        for movement in filtered_movements:
+            product_id = movement.get('product_id')
+            if product_id not in product_summary:
+                product_summary[product_id] = {
+                    'product_name': movement.get('product_name'),
+                    'product_sku': movement.get('product_sku'),
+                    'total_in': 0,
+                    'total_out': 0,
+                    'total_adjustments': 0,
+                    'current_stock': movement.get('current_stock', 0),
+                    'movements_count': 0
+                }
+            
+            summary = product_summary[product_id]
+            summary['movements_count'] += 1
+            
+            if movement.get('type') == 'in':
+                summary['total_in'] += movement.get('quantity', 0)
+            elif movement.get('type') == 'out':
+                summary['total_out'] += movement.get('quantity', 0)
+            elif movement.get('type') == 'adjustment':
+                summary['total_adjustments'] += movement.get('quantity', 0)
+        
+        # تجميع حسب السبب
+        reason_summary = {}
+        for movement in filtered_movements:
+            reason = movement.get('reason', 'غير محدد')
+            if reason not in reason_summary:
+                reason_summary[reason] = {
+                    'reason_name': get_movement_reason_name(reason),
+                    'total_quantity': 0,
+                    'movements_count': 0
+                }
+            
+            reason_summary[reason]['total_quantity'] += movement.get('quantity', 0)
+            reason_summary[reason]['movements_count'] += 1
+        
+        summary_data = {
+            'total_movements': len(filtered_movements),
+            'total_in': total_in,
+            'total_out': total_out,
+            'total_adjustments': total_adjustments,
+            'net_movement': total_in - total_out + total_adjustments,
+            'products_affected': len(product_summary),
+            'date_range': {
+                'start': start_date,
+                'end': end_date
+            }
+        }
+        
+        return jsonify({
+            'success': True,
+            'movements': filtered_movements,
+            'summary': summary_data,
+            'product_summary': list(product_summary.values()),
+            'reason_summary': list(reason_summary.values())
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})
+
+def get_movement_reason_name(reason):
+    """ترجمة أسباب حركة المخزون"""
+    reason_names = {
+        'sale': 'بيع',
+        'purchase': 'شراء',
+        'return': 'مردود',
+        'post_sale_return': 'مردود بعد البيع',
+        'adjustment': 'تعديل',
+        'damage': 'تلف',
+        'theft': 'فقدان',
+        'transfer': 'نقل',
+        'initial': 'رصيد افتتاحي'
+    }
+    return reason_names.get(reason, reason)
+
 # ===== إدارة المنتجات =====
 
 @app.route('/products')
