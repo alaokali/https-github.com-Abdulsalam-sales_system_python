@@ -68,32 +68,161 @@ SYSTEM_CONFIG = {
     'vat_number': '300123456789003'  # الرقم الضريبي
 }
 
-# ===== أنواع المستخدمين والصلاحيات =====
+# ===== أنواع المستخدمين والصلاحيات المفصلة =====
+DETAILED_PERMISSIONS = {
+    'pos': {
+        'name': 'نقطة البيع',
+        'sub_permissions': {
+            'pos_view': 'عرض نقطة البيع',
+            'pos_sale': 'إتمام البيع',
+            'pos_return': 'إرجاع المنتجات',
+            'pos_discount': 'إضافة خصم',
+            'pos_payment_methods': 'تغيير طريقة الدفع',
+            'pos_customer_select': 'اختيار العملاء',
+            'pos_price_edit': 'تعديل الأسعار'
+        }
+    },
+    'products': {
+        'name': 'إدارة المنتجات',
+        'sub_permissions': {
+            'products_view': 'عرض المنتجات',
+            'products_add': 'إضافة منتج',
+            'products_edit': 'تعديل منتج',
+            'products_delete': 'حذف منتج',
+            'products_prices': 'إدارة الأسعار',
+            'products_categories': 'إدارة الفئات',
+            'products_import': 'استيراد المنتجات',
+            'products_export': 'تصدير المنتجات'
+        }
+    },
+    'customers': {
+        'name': 'إدارة العملاء',
+        'sub_permissions': {
+            'customers_view': 'عرض العملاء',
+            'customers_add': 'إضافة عميل',
+            'customers_edit': 'تعديل عميل',
+            'customers_delete': 'حذف عميل',
+            'customers_balance': 'إدارة الأرصدة',
+            'customers_statement': 'كشف الحساب',
+            'customers_credit_limit': 'تحديد الحد الائتماني'
+        }
+    },
+    'inventory': {
+        'name': 'إدارة المخزون',
+        'sub_permissions': {
+            'inventory_view': 'عرض المخزون',
+            'inventory_add': 'إضافة مخزون',
+            'inventory_adjust': 'تعديل المخزون',
+            'inventory_movements': 'حركة المخزون',
+            'inventory_reports': 'تقارير المخزون',
+            'inventory_alerts': 'تنبيهات المخزون'
+        }
+    },
+    'purchases': {
+        'name': 'إدارة المشتريات',
+        'sub_permissions': {
+            'purchases_view': 'عرض المشتريات',
+            'purchases_add': 'إضافة مشتريات',
+            'purchases_edit': 'تعديل مشتريات',
+            'purchases_delete': 'حذف مشتريات',
+            'purchases_import': 'استيراد فواتير',
+            'purchases_suppliers': 'إدارة الموردين'
+        }
+    },
+    'reports': {
+        'name': 'التقارير والتحليلات',
+        'sub_permissions': {
+            'reports_sales': 'تقارير المبيعات',
+            'reports_customers': 'تقارير العملاء',
+            'reports_products': 'تقارير المنتجات',
+            'reports_inventory': 'تقارير المخزون',
+            'reports_profit': 'تقارير الأرباح (مدير فقط)',
+            'reports_financial': 'التقارير المالية',
+            'reports_daily': 'التقارير اليومية',
+            'reports_users': 'تقارير المستخدمين'
+        }
+    },
+    'partners': {
+        'name': 'حساب الشركاء',
+        'sub_permissions': {
+            'partners_view': 'عرض الشركاء',
+            'partners_add': 'إضافة شريك',
+            'partners_edit': 'تعديل شريك',
+            'partners_transactions': 'معاملات الشركاء',
+            'partners_statements': 'كشوفات الشركاء'
+        }
+    },
+    'users': {
+        'name': 'إدارة المستخدمين',
+        'sub_permissions': {
+            'users_view': 'عرض المستخدمين',
+            'users_add': 'إضافة مستخدم',
+            'users_edit': 'تعديل مستخدم',
+            'users_delete': 'حذف مستخدم',
+            'users_permissions': 'إدارة الصلاحيات',
+            'users_activity': 'سجل نشاط المستخدمين'
+        }
+    },
+    'settings': {
+        'name': 'الإعدادات',
+        'sub_permissions': {
+            'settings_system': 'إعدادات النظام',
+            'settings_company': 'إعدادات الشركة',
+            'settings_backup': 'النسخ الاحتياطية',
+            'settings_security': 'الإعدادات الأمنية'
+        }
+    }
+}
+
 USER_ROLES = {
     'admin': {
         'name': 'مدير النظام',
         'permissions': ['all'],
+        'detailed_permissions': {permission: list(details['sub_permissions'].keys()) for permission, details in DETAILED_PERMISSIONS.items()},
         'description': 'صلاحيات كاملة لجميع أجزاء النظام'
     },
     'manager': {
         'name': 'مدير المبيعات',
-        'permissions': ['sales', 'customers', 'products', 'reports', 'pos', 'inventory', 'purchases', 'partners', 'settings'],
-        'description': 'إدارة المبيعات والعملاء والمنتجات والتقارير والشركاء والإعدادات'
+        'permissions': ['pos', 'customers', 'products', 'inventory', 'purchases', 'reports', 'partners'],
+        'detailed_permissions': {
+            'pos': ['pos_view', 'pos_sale', 'pos_return', 'pos_discount', 'pos_payment_methods', 'pos_customer_select', 'pos_price_edit'],
+            'customers': ['customers_view', 'customers_add', 'customers_edit', 'customers_balance', 'customers_statement', 'customers_credit_limit'],
+            'products': ['products_view', 'products_add', 'products_edit', 'products_prices', 'products_categories', 'products_import', 'products_export'],
+            'inventory': ['inventory_view', 'inventory_add', 'inventory_adjust', 'inventory_movements', 'inventory_reports', 'inventory_alerts'],
+            'purchases': ['purchases_view', 'purchases_add', 'purchases_edit', 'purchases_import', 'purchases_suppliers'],
+            'reports': ['reports_sales', 'reports_customers', 'reports_products', 'reports_inventory', 'reports_profit', 'reports_financial', 'reports_daily'],
+            'partners': ['partners_view', 'partners_add', 'partners_edit', 'partners_transactions', 'partners_statements']
+        },
+        'description': 'إدارة شاملة للمبيعات والعمليات التجارية'
     },
     'cashier': {
         'name': 'أمين الصندوق',
-        'permissions': ['pos', 'customers', 'products', 'inventory', 'partners'],
-        'description': 'نقطة البيع وإدارة العملاء والمنتجات والشركاء'
+        'permissions': ['pos', 'customers', 'products'],
+        'detailed_permissions': {
+            'pos': ['pos_view', 'pos_sale', 'pos_return', 'pos_discount', 'pos_customer_select'],
+            'customers': ['customers_view', 'customers_add', 'customers_edit', 'customers_statement'],
+            'products': ['products_view', 'products_prices']
+        },
+        'description': 'نقطة البيع والتعامل مع العملاء'
     },
     'accountant': {
         'name': 'محاسب',
-        'permissions': ['reports', 'customers', 'financial', 'partners', 'settings'],
-        'description': 'التقارير المالية وإدارة العملاء والشركاء والإعدادات'
+        'permissions': ['reports', 'customers', 'partners'],
+        'detailed_permissions': {
+            'reports': ['reports_sales', 'reports_customers', 'reports_financial', 'reports_daily'],
+            'customers': ['customers_view', 'customers_balance', 'customers_statement'],
+            'partners': ['partners_view', 'partners_transactions', 'partners_statements']
+        },
+        'description': 'التقارير المالية وإدارة الحسابات'
     },
     'employee': {
         'name': 'موظف',
-        'permissions': ['pos', 'customers', 'products', 'partners'],
-        'description': 'نقطة البيع والعملاء والمنتجات والشركاء'
+        'permissions': ['pos', 'customers'],
+        'detailed_permissions': {
+            'pos': ['pos_view', 'pos_sale', 'pos_customer_select'],
+            'customers': ['customers_view', 'customers_add']
+        },
+        'description': 'العمليات الأساسية للبيع'
     }
 }
 
@@ -604,8 +733,8 @@ def init_database():
         print("✅ تم إنشاء قاعدة البيانات بنجاح")
     else:
         print("✅ قاعدة البيانات موجودة")
-def check_permission(user_id, permission):
-    """فحص صلاحيات المستخدم المحسن مع تحسينات شاملة"""
+def check_permission(user_id, permission, sub_permission=None):
+    """فحص صلاحيات المستخدم المحسن مع الصلاحيات المفصلة"""
     try:
         # التحقق من وجود معرف المستخدم
         if not user_id:
@@ -631,6 +760,7 @@ def check_permission(user_id, permission):
             return False
 
         user_permissions = current_user.get('permissions', [])
+        user_detailed_permissions = current_user.get('detailed_permissions', {})
         user_role = current_user.get('role', 'employee')
 
         # المدير له جميع الصلاحيات
@@ -638,50 +768,78 @@ def check_permission(user_id, permission):
             print(f"✅ صلاحية ممنوحة: {permission} للمستخدم: {current_user.get('username', 'unknown')} (مدير)")
             return True
 
-        # فحص الصلاحيات المحددة مباشرة
-        if permission in user_permissions:
-            print(f"✅ صلاحية ممنوحة: {permission} للمستخدم: {current_user.get('username', 'unknown')}")
+        # فحص الصلاحية العامة أولاً
+        if permission not in user_permissions:
+            # فحص صلاحيات الدور الافتراضية للتوافق العكسي
+            role_perms = USER_ROLES.get(user_role, {}).get('permissions', [])
+            if permission not in role_perms:
+                print(f"❌ صلاحية مرفوضة: {permission} للمستخدم: {current_user.get('username', 'unknown')}")
+                return False
+
+        # إذا لم يتم تحديد صلاحية فرعية، السماح بالوصول للصلاحية العامة
+        if sub_permission is None:
+            print(f"✅ صلاحية عامة ممنوحة: {permission} للمستخدم: {current_user.get('username', 'unknown')}")
             return True
 
-        # صلاحيات محددة حسب الدور (مع التحقق الدقيق)
-        role_permissions = {
-            'manager': ['sales', 'customers', 'products', 'reports', 'pos', 'inventory', 'purchases', 'settings', 'partners'],
-            'cashier': ['pos', 'customers', 'products', 'inventory', 'partners'],
-            'accountant': ['reports', 'customers', 'financial', 'partners', 'settings'],
-            'employee': ['pos', 'customers', 'products', 'partners']
-        }
-
-        # التحقق من الصلاحيات الخاصة
-        special_permissions = {
-            'users': ['admin'],  # إدارة المستخدمين للمدير فقط
-            'partners': ['admin', 'manager', 'cashier', 'accountant', 'employee'],  # حساب الشركاء لجميع المستخدمين
-            'financial': ['admin', 'manager', 'accountant'],  # التقارير المالية
-            'settings': ['admin', 'manager', 'accountant']  # الإعدادات للمدير ومدير المبيعات والمحاسب
-        }
-
-        # فحص الصلاحيات الخاصة أولاً
-        if permission in special_permissions:
-            if user_role in special_permissions[permission]:
-                print(f"✅ صلاحية خاصة ممنوحة: {permission} للمستخدم: {current_user.get('username', 'unknown')} (دور: {user_role})")
+        # فحص الصلاحية الفرعية
+        if permission in user_detailed_permissions:
+            if sub_permission in user_detailed_permissions[permission]:
+                print(f"✅ صلاحية مفصلة ممنوحة: {permission}.{sub_permission} للمستخدم: {current_user.get('username', 'unknown')}")
                 return True
             else:
-                print(f"❌ صلاحية خاصة مرفوضة: {permission} للمستخدم: {current_user.get('username', 'unknown')} (دور: {user_role})")
+                print(f"❌ صلاحية مفصلة مرفوضة: {permission}.{sub_permission} للمستخدم: {current_user.get('username', 'unknown')}")
                 return False
 
-        # فحص الصلاحيات العادية حسب الدور
-        if user_role in role_permissions:
-            if permission in role_permissions[user_role]:
-                print(f"✅ صلاحية عادية ممنوحة: {permission} للمستخدم: {current_user.get('username', 'unknown')} (دور: {user_role})")
+        # إذا لم تكن هناك صلاحيات مفصلة محددة، فحص الصلاحيات الافتراضية للدور
+        role_detailed_perms = USER_ROLES.get(user_role, {}).get('detailed_permissions', {})
+        if permission in role_detailed_perms:
+            if sub_permission in role_detailed_perms[permission]:
+                print(f"✅ صلاحية افتراضية ممنوحة: {permission}.{sub_permission} للمستخدم: {current_user.get('username', 'unknown')}")
                 return True
-            else:
-                print(f"❌ صلاحية عادية مرفوضة: {permission} للمستخدم: {current_user.get('username', 'unknown')} (دور: {user_role})")
-                return False
 
-        print(f"❌ صلاحية غير معروفة: {permission} للمستخدم: {current_user.get('username', 'unknown')} (دور: {user_role})")
+        print(f"❌ صلاحية مفصلة مرفوضة: {permission}.{sub_permission} للمستخدم: {current_user.get('username', 'unknown')}")
         return False
 
     except Exception as e:
         print(f"خطأ في فحص الصلاحيات: {e}")
+        return False
+
+def check_detailed_permission(user_id, detailed_permission):
+    """فحص صلاحية مفصلة محددة"""
+    try:
+        data = load_database()
+        users = data.get('users', {})
+
+        current_user = None
+        for username, user in users.items():
+            if user.get('id') == user_id:
+                current_user = user
+                break
+
+        if not current_user or not current_user.get('is_active', True):
+            return False
+
+        # المدير له جميع الصلاحيات
+        if current_user.get('role') == 'admin' or 'all' in current_user.get('permissions', []):
+            return True
+
+        # البحث في الصلاحيات المفصلة
+        user_detailed_permissions = current_user.get('detailed_permissions', {})
+        for category, perms in user_detailed_permissions.items():
+            if detailed_permission in perms:
+                return True
+
+        # فحص الصلاحيات الافتراضية للدور
+        user_role = current_user.get('role', 'employee')
+        role_detailed_perms = USER_ROLES.get(user_role, {}).get('detailed_permissions', {})
+        for category, perms in role_detailed_perms.items():
+            if detailed_permission in perms:
+                return True
+
+        return False
+
+    except Exception as e:
+        print(f"خطأ في فحص الصلاحية المفصلة: {e}")
         return False
 
 def get_current_user():
@@ -1506,6 +1664,130 @@ def process_post_sale_return():
             
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)})
+
+@app.route('/api/customers/statement/<customer_id>')
+@require_permission('customers')
+def get_customer_statement(customer_id):
+    """كشف حساب مفصل للعميل"""
+    try:
+        if not check_detailed_permission(session['user_id'], 'customers_statement'):
+            return jsonify({'success': False, 'message': 'ليس لديك صلاحية لعرض كشف الحساب'})
+        
+        data = load_database()
+        customers = data.get('customers', {})
+        sales = data.get('sales', {})
+        balance_history = data.get('balance_history', {})
+        returns_data = data.get('returns', {})
+        
+        if customer_id not in customers:
+            return jsonify({'success': False, 'message': 'العميل غير موجود'})
+        
+        customer = customers[customer_id]
+        
+        # جمع جميع المعاملات
+        transactions = []
+        
+        # إضافة المبيعات
+        for sale_id, sale in sales.items():
+            if sale.get('customer_id') == customer_id:
+                transactions.append({
+                    'date': sale.get('date'),
+                    'type': 'sale',
+                    'type_name': 'بيع',
+                    'reference': sale.get('invoice_number'),
+                    'debit': sale.get('total_amount', 0) if sale.get('payment_method') == 'آجل' else 0,
+                    'credit': 0,
+                    'description': f"فاتورة بيع رقم {sale.get('invoice_number')}",
+                    'payment_method': sale.get('payment_method'),
+                    'items_count': len(sale.get('items', [])),
+                    'returns_amount': sale.get('returns_amount', 0)
+                })
+        
+        # إضافة تاريخ الرصيد
+        for history_id, history in balance_history.items():
+            if history.get('customer_id') == customer_id:
+                amount = history.get('amount', 0)
+                transactions.append({
+                    'date': history.get('date'),
+                    'type': history.get('type'),
+                    'type_name': get_transaction_type_name(history.get('type')),
+                    'reference': history.get('reference', ''),
+                    'debit': amount if amount > 0 else 0,
+                    'credit': abs(amount) if amount < 0 else 0,
+                    'description': history.get('description', ''),
+                    'payment_method': '',
+                    'items_count': 0,
+                    'returns_amount': 0
+                })
+        
+        # إضافة المردودات
+        for return_id, return_item in returns_data.items():
+            if return_item.get('customer_id') == customer_id:
+                transactions.append({
+                    'date': return_item.get('date'),
+                    'type': 'return',
+                    'type_name': 'مردود',
+                    'reference': return_item.get('invoice_number'),
+                    'debit': 0,
+                    'credit': return_item.get('total_amount', 0),
+                    'description': f"مردود من فاتورة {return_item.get('invoice_number')} - {return_item.get('reason', '')}",
+                    'payment_method': return_item.get('payment_method'),
+                    'items_count': 1,
+                    'returns_amount': return_item.get('total_amount', 0)
+                })
+        
+        # ترتيب المعاملات حسب التاريخ
+        transactions.sort(key=lambda x: x['date'], reverse=True)
+        
+        # حساب الرصيد الجاري
+        running_balance = 0
+        for transaction in reversed(transactions):
+            running_balance += transaction['debit'] - transaction['credit']
+            transaction['running_balance'] = running_balance
+        
+        # حساب الإحصائيات
+        total_sales = sum(t['debit'] for t in transactions if t['type'] == 'sale')
+        total_payments = sum(t['credit'] for t in transactions if t['type'] in ['payment', 'cash_payment'])
+        total_returns = sum(t['credit'] for t in transactions if t['type'] == 'return')
+        current_balance = customer.get('current_balance', 0)
+        
+        summary = {
+            'customer_name': customer.get('name'),
+            'customer_phone': customer.get('phone'),
+            'customer_email': customer.get('email', ''),
+            'total_sales': total_sales,
+            'total_payments': total_payments,
+            'total_returns': total_returns,
+            'current_balance': current_balance,
+            'credit_limit': customer.get('credit_limit', 0),
+            'available_credit': customer.get('credit_limit', 0) - current_balance,
+            'transactions_count': len(transactions),
+            'first_transaction_date': transactions[-1]['date'] if transactions else None,
+            'last_transaction_date': transactions[0]['date'] if transactions else None
+        }
+        
+        return jsonify({
+            'success': True,
+            'customer': customer,
+            'transactions': transactions,
+            'summary': summary
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})
+
+def get_transaction_type_name(transaction_type):
+    """ترجمة نوع المعاملة"""
+    type_names = {
+        'payment': 'دفعة',
+        'cash_payment': 'دفع نقدي',
+        'credit_adjustment': 'تعديل ائتماني',
+        'return_credit': 'خصم مردود',
+        'return_cash': 'مردود نقدي',
+        'post_sale_return': 'مردود بعد البيع',
+        'opening_balance': 'رصيد افتتاحي'
+    }
+    return type_names.get(transaction_type, transaction_type)
 
 # ===== إدارة المنتجات =====
 
