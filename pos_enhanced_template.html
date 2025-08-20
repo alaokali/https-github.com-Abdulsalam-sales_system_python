@@ -536,9 +536,6 @@
                 min-width: auto;
             }
         }
-        .cart-table th, .cart-table td { border-bottom: 1px solid #e9ecef; font-size: 14px; }
-        .cart-table th { font-weight: bold; }
-        .cart-table input { text-align: center; }
     </style>
 </head>
 <body>
@@ -628,11 +625,11 @@
                 </div>
             </div>
 
-            <!-- Cart Section -->
+            <!-- Sales Section -->
             <div class="cart-section">
                 <h5 class="mb-3">
-                    <i class="fas fa-shopping-cart me-2"></i>
-                    سلة المشتريات
+                    <i class="fas fa-cash-register me-2"></i>
+                    واجهة المبيعات
                 </h5>
 
                 <!-- Customer Selection -->
@@ -664,8 +661,8 @@
                 <!-- Cart Items -->
                 <div class="cart-items" id="cartItems">
                     <div class="empty-cart">
-                        <i class="fas fa-shopping-cart"></i>
-                        <h6>السلة فارغة</h6>
+                        <i class="fas fa-cash-register"></i>
+                        <h6>لا توجد عناصر</h6>
                         <small>أضف منتجات للبدء في عملية البيع</small>
                     </div>
                 </div>
@@ -880,49 +877,53 @@
             updateCartDisplay();
         }
 
+
         function updateCartDisplay() {
             const cartContainer = document.getElementById('cartItems');
             if (cart.length === 0) {
                 cartContainer.innerHTML = `
                     <div class="empty-cart">
-                        <i class="fas fa-shopping-cart"></i>
-                        <h6>السلة فارغة</h6>
+                        <i class="fas fa-cash-register"></i>
+                        <h6>لا توجد عناصر</h6>
                         <small>أضف منتجات للبدء في عملية البيع</small>
                     </div>
                 `;
             } else {
-                // جدول أفقي للأصناف
-                let table = `<div style="overflow-x:auto;"><table class="cart-table" style="width:100%; min-width:600px; border-collapse:collapse; text-align:center;">
-                    <thead>
-                        <tr style="background:#f8f9fa;">
+                // واجهة مبيعات احترافية باستخدام جدول متجاوب
+                let table = `<div class="table-responsive"><table class="table table-striped table-hover align-middle">` +
+                    `\n                    <thead class="table-light">
+                        <tr>
                             <th>المنتج</th>
+                            <th>الكود</th>
                             <th>الكمية</th>
                             <th>سعر القطعة</th>
                             <th>المجموع</th>
-                            <th>تعديل</th>
+                            <th></th>
                         </tr>
                     </thead>
-                    <tbody>`;
+                    <tbody>`
                 cart.forEach((item, index) => {
                     table += `<tr>
-                        <td style="padding:4px 2px;">${item.name}</td>
-                        <td style="padding:4px 2px;">
-                            <input type="number" class="quantity-input" value="${item.quantity}" min="1" max="${item.max_quantity}" onchange="setQuantity(${index}, this.value)" style="width:50px;">
+                        <td>${item.name}</td>
+                        <td>${item.sku || ''}</td>
+                        <td>
+                            <input type="number" class="quantity-input" value="${item.quantity}" min="1" max="${item.max_quantity}" onchange="setQuantity(${index}, this.value)" style="width:60px;">
                         </td>
-                        <td style="padding:4px 2px;">
+                        <td>
                             <input type="number" class="price-input" value="${item.price.toFixed(2)}" onchange="updateItemPrice(${index}, this.value)" step="0.01" min="0" style="width:80px;">
                         </td>
-                        <td style="padding:4px 2px;">${item.total.toFixed(2)} {{ system_config.currency }}</td>
-                        <td style="padding:4px 2px;">
+                        <td>${item.total.toFixed(2)} {{ system_config.currency }}</td>
+                        <td>
                             <button class="quantity-btn text-danger" onclick="removeFromCart(${index})"><i class="fas fa-trash"></i></button>
                         </td>
-                    </tr>`;
-                });
-                table += '</tbody></table></div>';
-                cartContainer.innerHTML = table;
+                    </tr>`
+                })
+                table += '</tbody></table></div>'
+                cartContainer.innerHTML = table
             }
-            updateSummary();
+            updateSummary()
         }
+
 
         function updateItemPrice(index, newPrice) {
             if (cart[index]) {
